@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Shop – PandaPlug</title>
+  <meta name="description" content="Minimal, reszponzív webshop sablon – PandaPlug stílusú elrendezés jogtiszta felépítéssel." />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0b0b0c;
+      --card: #121214;
+      --muted: #1a1b1e;
+      --text: #f4f4f5;
+      --subtext: #b4b4b7;
+      --brand: #f0f0f2; /* gombok/keretek */
+      --accent: #e5e5e7;
+      --sale: #ff5252;
+      --new: #a7f3d0;
+      --shadow: 0 10px 30px rgba(0,0,0,.25);
+      --radius: 16px;
+      --radius-lg: 20px;
+      --maxw: 1200px;
+    }
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0; background: var(--bg); color: var(--text);
+      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, "Helvetica Neue", Arial, "Apple Color Emoji", "Segoe UI Emoji";
+      -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility;
+    }
+    a { color: inherit; text-decoration: none; }
+    img { max-width: 100%; display: block; }
+    .container { width: 100%; max-width: var(--maxw); margin: 0 auto; padding: 0 20px; }
+
+    /* Top bar */
+    .topbar { background: #121214; color: var(--subtext); font-size: 13px; }
+    .topbar .container { display: flex; align-items: center; justify-content: space-between; height: 40px; }
+    .lang { opacity: .85; }
+
+    /* Header / Nav */
+    header { position: sticky; top: 0; z-index: 50; backdrop-filter: saturate(140%) blur(8px); background: rgba(11,11,12,.7); border-bottom: 1px solid rgba(255,255,255,.06); }
+    .nav { display:flex; align-items:center; justify-content:space-between; height:72px; gap:16px; }
+    .brand { display:flex; align-items:center; gap:10px; font-family: "Space Grotesk", Inter, sans-serif; font-weight:700; letter-spacing:.5px; }
+    .brand .logo { width: 36px; height: 36px; border-radius: 10px; background: linear-gradient(135deg,#fff,#cfcfd4); box-shadow: var(--shadow); }
+    .nav-links { display:flex; gap:20px; align-items:center; }
+    .nav-links a { padding: 10px 6px; color: var(--text); opacity:.9; border-radius: 10px; }
+    .nav-links a:hover { background: rgba(255,255,255,.06); }
+    .actions { display:flex; align-items:center; gap:10px; }
+    .search { position: relative; }
+    .search input { background: var(--muted); color: var(--text); border: 1px solid rgba(255,255,255,.08); border-radius: 999px; padding: 10px 36px 10px 14px; outline: none; min-width: 220px; }
+    .search button { position:absolute; right: 4px; top: 4px; bottom:4px; border-radius: 999px; border:1px solid rgba(255,255,255,.08); background: var(--card); color: var(--text); padding: 0 10px; cursor:pointer; }
+    .iconbtn { display:inline-flex; align-items:center; justify-content:center; border:1px solid rgba(255,255,255,.12); background: var(--muted); color: var(--text); border-radius: 999px; height: 40px; width: 40px; cursor:pointer; }
+
+    .mobile-toggle { display:none; }
+
+    /* Hero */
+    .hero { position: relative; margin: 18px 0 22px; border-radius: var(--radius-lg); overflow:hidden; background: linear-gradient( to right, #121214, #1f2024 ); border: 1px solid rgba(255,255,255,.06); }
+    .hero-inner { display:grid; grid-template-columns: 1.2fr 1fr; gap: 10px; }
+    .hero-copy { padding: 40px; }
+    .eyebrow { font-size: 12px; text-transform: uppercase; letter-spacing: .2em; color: var(--subtext); }
+    .hero h1 { font-family: "Space Grotesk", Inter, sans-serif; font-size: clamp(28px, 4vw, 44px); margin: 8px 0 10px; }
+    .hero p { color: var(--subtext); margin: 0 0 18px; }
+    .cta-row { display:flex; gap: 12px; align-items:center; }
+    .btn { display:inline-flex; align-items:center; gap:8px; padding: 12px 16px; border-radius: 12px; border:1px solid rgba(255,255,255,.14); background: var(--brand); color: #111; font-weight: 600; cursor: pointer; }
+    .btn.secondary { background: transparent; color: var(--text); }
+    .hero-media { position: relative; min-height: 240px; }
+    .hero-media .tile { position:absolute; inset: 0; background: url('https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=1600&auto=format&fit=crop') center/cover no-repeat; }
+
+    /* Layout */
+    .layout { display:grid; grid-template-columns: 260px 1fr; gap: 20px; }
+
+    /* Filters */
+    .filters { position:sticky; top: 92px; align-self: start; background: var(--card); border:1px solid rgba(255,255,255,.08); border-radius: var(--radius); padding: 16px; }
+    .filters h3 { margin: 0 0 10px; font-size: 14px; letter-spacing:.06em; color: var(--subtext); text-transform: uppercase; }
+    .filter-block + .filter-block { margin-top: 12px; }
+    .check { display:flex; align-items:center; gap:10px; padding:8px 6px; border-radius:10px; cursor:pointer; }
+    .check input { accent-color: #fff; }
+
+    /* Product grid */
+    .grid-toolbar { display:flex; align-items:center; justify-content:space-between; margin: 2px 0 10px; }
+    .sort { background: var(--muted); color: var(--text); border: 1px solid rgba(255,255,255,.1); border-radius: 10px; padding: 8px 10px; }
+
+    .products { display:grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    .card { background: var(--card); border:1px solid rgba(255,255,255,.08); border-radius: var(--radius); overflow:hidden; transition: transform .2s ease, box-shadow .2s ease; }
+    .card:hover { transform: translateY(-2px); box-shadow: var(--shadow); }
+    .thumb { position:relative; aspect-ratio: 4/5; background: #0f0f12; overflow:hidden; }
+    .thumb img { width:100%; height:100%; object-fit:cover; }
+    .badges { position:absolute; top:10px; left:10px; display:flex; gap:6px; }
+    .badge { font-size: 12px; padding: 6px 8px; border-radius: 999px; background: rgba(255,255,255,.9); color:#111; border: 1px solid rgba(0,0,0,.1); }
+    .badge.sale { background: var(--sale); color: #fff; }
+    .badge.new { background: var(--new); color: #0b372a; }
+    .colors { position:absolute; left:10px; bottom:10px; display:flex; gap:6px; }
+    .swatch { width: 16px; height: 16px; border-radius: 999px; border:1px solid rgba(0,0,0,.2); }
+    .info { padding: 12px; display:grid; gap:6px; }
+    .title { font-weight: 600; }
+    .price { display:flex; align-items:center; gap:8px; }
+    .price .compare { color: var(--subtext); text-decoration: line-through; font-size: 14px; }
+    .quick { display:flex; gap:8px; }
+    .quick .size { background: var(--muted); border:1px solid rgba(255,255,255,.1); border-radius: 8px; padding: 6px 8px; font-size: 12px; cursor:pointer; }
+
+    .pagination { display:flex; justify-content:center; gap:8px; margin: 18px 0 0; }
+    .pagebtn { background: var(--muted); border:1px solid rgba(255,255,255,.08); color: var(--text); padding: 10px 14px; border-radius: 10px; cursor: pointer; }
+
+    /* Newsletter + Footer */
+    .newsletter { margin: 40px 0 16px; background: linear-gradient(180deg, #141416, #0f0f12); border:1px solid rgba(255,255,255,.06); border-radius: var(--radius-lg); padding: 24px; display:grid; gap:10px; }
+    .newsletter h3 { margin: 0; font-size: 24px; font-family: "Space Grotesk", Inter, sans-serif; }
+    .newsletter form { display:flex; gap: 8px; }
+    .newsletter input { flex:1; background: var(--muted); color: var(--text); border:1px solid rgba(255,255,255,.12); border-radius: 12px; padding: 12px; }
+    .newsletter button { padding: 12px 14px; border-radius: 12px; border: 1px solid rgba(255,255,255,.2); background: var(--brand); color: #111; font-weight: 600; cursor:pointer; }
+
+    footer { color: var(--subtext); border-top:1px solid rgba(255,255,255,.06); padding: 24px 0 50px; }
+    .footgrid { display:grid; grid-template-columns: 1.2fr 1fr 1fr 1fr; gap: 20px; }
+    .footgrid h4 { margin: 0 0 10px; color: var(--text); font-size: 14px; text-transform: uppercase; letter-spacing:.12em; }
+    .footgrid a { display:block; padding: 6px 0; opacity:.9; }
+
+    /* Mobile */
+    @media (max-width: 980px) {
+      .hero-inner { grid-template-columns: 1fr; }
+      .layout { grid-template-columns: 1fr; }
+      .filters { position: static; order: 2; }
+      .products { grid-template-columns: repeat(2, 1fr); }
+      .nav-links { display:none; }
+      .mobile-toggle { display:inline-flex; }
+    }
+    @media (max-width: 600px){
+      .products { grid-template-columns: 1fr; }
+      .search input { min-width: 0; width: 160px; }
+      .footgrid { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div class="container">
+      <div>Ingyenes szállítás 25 000 Ft felett</div>
+      <div class="lang">HU / EN</div>
+    </div>
+  </div>
+
+  <!-- HEADER / NAV -->
+  <header>
+    <div class="container nav">
+      <button class="iconbtn mobile-toggle" aria-label="Menü" onclick="toggleMenu()">☰</button>
+      <a class="brand" href="#">
+        <img src="https://ci3.googleusercontent.com/mail-img-att/AGAZnRp0dnhP9L7zTUWpushtpyA1R8VKn2QtYzb7YucEoijDbkOY0nPPksCEoHoaQ1rtsc7_nOIuHgld0bgiQb5TC8tHvczBqHxlbWH6nfx9bUihubghHEjpwPO-dHuM4gOV_w5_IL77SdKSw_24FtKk0BmaLFnT5kYwEo_v1vjNoxaOaLgwMFYadnVWgn98_rUzR6lJITr7h3qZIFD3Sdl36JIHzRcfB3PpNmd-zY_r21uvwnnHQq5ZMe2c-HEoMMeKeAHM5K3adFDhlVinIFh5fU8ZavMwLIbO8hvC6oO1D0hmbCVbsWwqHyTdiLwHs6uU_SnbxzFyWo62r3kxAC5nUeqxQRkGbzsXg6fIMUV3delTelwzv5uPU1eStAwWhQhsk5_ChUjSQ7GhSBxXwyORZzVL9s0CTWM5nyaluUmR_uEIo5-UJopfePS3fiDrwB7MxsY4NtEpI_0gZcD8eUHhmSFjyYvlf6EnMWJgQF11BZKC3NS3bn7caN4icQfn37Mu1x8a0uuNzE5nT2h18Se0rl7vLh4OzrlRB-B7SZ9dDGw9yj5EidvnFdlreVbf4XAh3lRB8l3GX9DcBsV3NtaexAi0m0kWOrGFidU5WkSBwAj9zgYDY5TZmrHbwcRKVRfsMbIglmvMjle5vEmRi3KBfQ5gBEZGrUMIPgXwFNhYbRz_poHPV9OAk1ACY65uiDT1TmUveMot0_kyAQIytEozOafXf9m5Blo0ti8yGKv_ABNUMnBjyzKgXL29kWhBzJxxKTYGKT-lJbzMQFsQSeFTDmz9AzxprIeNS4KnbCys7-wlFliUj5tFKme6qm3TmXyVaWmA7p6bAq6C2TArGSPK6-04Qur7lToI2jxBJ2ZbSeKToDDQsOtaRElk8M1XZHJrucvXW9Ta_YHRvKwGqbH2aAiWajqOWajT8ITchQpfyIdAiN1BiyhO45CvdcW0albZlCKUK_z7vtWjx9RXKzoD_0xyDWX3sPdIEyMdmvUZzsL3hUyPqm7wMWo-5kM5SlNqBtqezV0a7LUuI-NT-e-SbYXH4EX46RXbVpoe9xdeuASchQ=s0-l75-ft" alt="PandaPlug logó" class="logo" style="width:36px;height:36px;border-radius:10px;background:#fff;box-shadow:var(--shadow);">
+        <span>PandaPlug</span>
+      </a>
+      <nav class="nav-links" id="navLinks">
+        <a href="#">Újdonságok</a>
+        <a href="#">Felsők</a>
+        <a href="#">Alsók</a>
+        <a href="#">Klasszikus kollekció</a>
+      </nav>
+      <div class="actions">
+        <div class="search">
+          <input type="search" placeholder="Keresés…" />
+          <button aria-label="Keresés">🔎</button>
+        </div>
+        <button class="iconbtn" aria-label="Fiók">👤</button>
+        <button class="iconbtn" aria-label="Kosár" onclick="openCart()">🛒<span id="cartCount" style="margin-left:4px; font-size:12px;">0</span></button>
+      </div>
+    </div>
+  </header>
+
+  <!-- HERO -->
+  <section class="container hero">
+    <div class="hero-inner">
+      <div class="hero-copy">
+        <div class="eyebrow">Szezonális csemegék</div>
+        <h1>Városi ruhatár friss dropokkal</h1>
+        <p>Minimal, letisztult stílus. Jó minőség, fair ár. Készült, hogy bírja a tempót.</p>
+        <div class="cta-row">
+          <a class="btn" href="#grid">Vásárlás</a>
+          <a class="btn secondary" href="#">Tagság & jutalmak</a>
+        </div>
+      </div>
+      <div class="hero-media">
+        <div class="tile" role="img" aria-label="Városi mood fotó"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTENT: FILTERS + GRID -->
+  <main class="container layout" id="grid">
+    <!-- FILTERS -->
+    <aside class="filters" id="filters">
+      <h3>Kategória</h3>
+      <div class="filter-block">
+        <label class="check"><input type="checkbox" name="cat" value="tshirt" checked> Póló</label>
+        <label class="check"><input type="checkbox" name="cat" value="sweater"> Pulóver</label>
+        <label class="check"><input type="checkbox" name="cat" value="denim"> Nadrág</label>
+        <label class="check"><input type="checkbox" name="cat" value="shorts"> Rövidnadrág</label>
+      </div>
+      <h3>Méret</h3>
+      <div class="filter-block">
+        <label class="check"><input type="checkbox" name="size" value="S"> S</label>
+        <label class="check"><input type="checkbox" name="size" value="M"> M</label>
+        <label class="check"><input type="checkbox" name="size" value="L"> L</label>
+        <label class="check"><input type="checkbox" name="size" value="XL"> XL</label>
+      </div>
+      <h3>Ár</h3>
+      <div class="filter-block">
+        <input type="range" min="0" max="200" value="150" oninput="priceOut.textContent=this.value+' €'">
+        <div style="display:flex; justify-content:space-between; font-size:12px; color:var(--subtext);">
+          <span>0 €</span>
+          <span id="priceOut">150 €</span>
+        </div>
+      </div>
+    </aside>
+
+    <!-- GRID + TOOLBAR -->
+    <section>
+      <div class="grid-toolbar">
+        <div style="color: var(--subtext);">Találatok: <span id="count">0</span></div>
+        <select class="sort" id="sort">
+          <option value="popular">Legnépszerűbb</option>
+          <option value="new">Legújabb</option>
+          <option value="price-asc">Ár szerint (növekvő)</option>
+          <option value="price-desc">Ár szerint (csökkenő)</option>
+        </select>
+      </div>
+
+      <div class="products" id="products"></div>
+
+      <div class="pagination">
+        <button class="pagebtn" onclick="prevPage()">Előző</button>
+        <button class="pagebtn" onclick="nextPage()">Következő</button>
+      </div>
+    </section>
+  </main>
+
+  <!-- NEWSLETTER + FOOTER -->
+  <section class="container newsletter">
+    <h3>Csatlakozz a levelezőlistához</h3>
+    <p style="margin:0; color:var(--subtext)">10% kedvezmény az első rendelésből és exkluzív ajánlatok.</p>
+    <form onsubmit="event.preventDefault(); alert('Köszönjük!'); this.reset();">
+      <input type="email" placeholder="Email címed" required>
+      <button type="submit">Feliratkozom</button>
+    </form>
+  </section>
+
+  <footer>
+    <div class="container footgrid">
+      <div>
+        <div class="brand" style="margin-bottom:8px">
+          <div class="logo"></div>
+          <span>PandaPlug</span>
+        </div>
+        <p style="margin-top:6px; color:var(--subtext)">Letisztult, időtálló darabok. Budapestről.</p>
+      </div>
+      <div>
+        <h4>Shop</h4>
+        <a href="#">Újdonságok</a>
+        <a href="#">Férfi</a>
+        <a href="#">Női</a>
+        <a href="#">Akció</a>
+      </div>
+      <div>
+        <h4>Infó</h4>
+        <a href="#">Szállítás</a>
+        <a href="#">Visszaküldés</a>
+        <a href="#">Gyakori kérdések</a>
+      </div>
+      <div>
+        <h4>Jogi</h4>
+        <a href="#">ÁSZF</a>
+        <a href="#">Adatvédelem</a>
+        <a href="#">Impresszum</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+// --- TERMÉKADATOK BETÖLTÉSE API-BÓL ---
+const productsEl = document.getElementById('products');
+const countEl = document.getElementById('count');
+let PRODUCTS = [];
+let page = 1;
+const perPage = 12;
+const cart = new Map();
+
+function formatPrice(v){ return new Intl.NumberFormat('hu-HU', { style:'currency', currency:'EUR'}).format(v); }
+
+function getActiveFilters(){
+  const cats = Array.from(document.querySelectorAll('input[name="cat"]:checked')).map(i=>i.value);
+  const sizes = Array.from(document.querySelectorAll('input[name="size"]:checked')).map(i=>i.value);
+  const priceMax = parseFloat(document.getElementById('priceOut').textContent);
+  return { cats, sizes, priceMax };
+}
+
+function filterAndSort(){
+  const { cats, priceMax } = getActiveFilters();
+  const sort = document.getElementById('sort').value;
+  let data = PRODUCTS.filter(p => cats.includes(p.cat) && p.price <= priceMax);
+  if (sort === 'price-asc') data.sort((a,b)=>a.price-b.price);
+  if (sort === 'price-desc') data.sort((a,b)=>b.price-a.price);
+  return data;
+}
+
+function paginate(arr){
+  const start = (page-1)*perPage;
+  return arr.slice(start, start+perPage);
+}
+
+function render(){
+  const data = filterAndSort();
+  countEl.textContent = data.length;
+  const view = paginate(data);
+  productsEl.innerHTML = view.map(p=>`\
+    <article class="card" aria-label="${p.title}">\
+      <a href="#" class="thumb">\
+        <img src="images/${p.image}.png" alt="${p.title}">\
+      </a>\
+      <div class="info">\
+        <div class="title">${p.title}</div>\
+        <div class="price">\
+          <span>${formatPrice(p.price)}</span>\
+        </div>\
+        <div class="quick">\
+          ${['S','M','L','XL'].map(s=>`<button class="size" onclick="addToCart(${p.id}, '${s}')">${s}</button>`).join('')}\
+        </div>\
+      </div>\
+    </article>`).join('');
+}
+
+function addToCart(id, size){
+  const key = id+':'+size;
+  cart.set(key, (cart.get(key)||0) + 1);
+  document.getElementById('cartCount').textContent = Array.from(cart.values()).reduce((a,b)=>a+b,0);
+}
+
+function prevPage(){ if (page>1){ page--; render(); } }
+function nextPage(){ const total = filterAndSort().length; if (page*perPage < total){ page++; render(); } }
+
+function toggleMenu(){ const nav = document.getElementById('navLinks'); nav.style.display = nav.style.display === 'flex' ? 'none' : 'flex'; nav.style.flexDirection = 'column'; }
+function openCart(){ alert('Kosár: '+ (Array.from(cart.entries()).map(([k,v])=>k+' x'+v).join(', ')||'üres')); }
+
+document.getElementById('sort').addEventListener('change', ()=>{ page=1; render(); });
+document.querySelectorAll('input[name="cat"], input[name="size"]').forEach(i=> i.addEventListener('change', ()=>{ page=1; render(); }));
+
+// --- API-BÓL TÖLTJÜK BE A TERMÉKEKET ---
+fetch('http://localhost:5000/api/products')
+  .then(r => r.json())
+  .then(data => {
+    console.log('API termékek:', data.slice(0, 5));
+    PRODUCTS = data;
+    render();
+  })
+  .catch(err => {
+    console.error('Nem sikerült betölteni a termékeket az API-ból:', err);
+  });
+  </script>
+</body>
+</html>
