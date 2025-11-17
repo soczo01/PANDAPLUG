@@ -1,26 +1,32 @@
 const express = require('express');
 const cors = require('cors');
 const mysql = require('mysql2/promise');
-
-
-
+const path = require('path');
 
 const app = express();
-app.use(cors()); // minden domaint engedünk, ideiglenesen
+app.use(cors());
 app.use(express.json());
+
+// Statikus képek kiszolgálása
+app.use('/images', express.static(path.join(__dirname, 'public/images')));
+
 
 // DB kapcsolat
 const pool = mysql.createPool({
   host: 'localhost',
   user: 'root',
-  password: '',
-  database: 'pandaplug1'
+  password: 'root',
+  database: 'pandaplug1',
+  waitForConnections: true,
+  connectionLimit: 10,
+  queueLimit: 0,
+  charset: 'utf8mb4'
 });
 
-// API endpoint termékekhez
+// Termékek lekérése
 app.get('/api/products', async (req, res) => {
   try {
-    const [rows] = await pool.query('SELECT * FROM termekek'); // tábla neve a képen
+    const [rows] = await pool.query('SELECT * FROM view1');
     res.json(rows);
   } catch (err) {
     console.error(err);
@@ -28,6 +34,7 @@ app.get('/api/products', async (req, res) => {
   }
 });
 
-// server indítása
-const PORT = 5000;
+// Server indítása
+const PORT = 8080;
 app.listen(PORT, () => console.log(`Server fut a ${PORT} porton`));
+module.exports = app;
