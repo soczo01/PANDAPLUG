@@ -1,18 +1,71 @@
-// backend/controllers/termekController.js
-import Termek from '../models/termekModel.js';
+const Termek = require('../models/termekModel');
 
 const termekController = {};
 
 termekController.getAll = async (req, res) => {
     try {
-        const termekLista = await Termek.getAll();
-        res.writeHead(200, { 'Content-Type': 'application/json' });
-        res.end(JSON.stringify(termekLista));
-    } catch (error) {
-        console.error('Hiba a termékek lekérésekor:', error);
-        res.writeHead(500, { 'Content-Type': 'application/json' });
-        res.end(JSON.stringify({ error: 'Hiba a termékek lekérésekor' }));
+        const termekek = await Termek.getAll();
+        res.json(termekek);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
     }
 };
 
-export default termekController;
+termekController.getById = async (req, res) => {
+    try {
+        const termek = await Termek.getById(req.params.id);
+        if (!termek) return res.status(404).json({ message: 'Termék nem található' });
+        res.json(termek);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+};
+
+termekController.create = async (req, res) => {
+    try {
+        const result = await Termek.create(req.body);
+        res.json({ message: 'Termék sikeresen létrehozva', insertId: result.insertId });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+};
+
+termekController.updateById = async (req, res) => {
+    try {
+        const result = await Termek.updateById(req.params.id, req.body);
+        res.json({ message: 'Termék frissítve', result });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+};
+
+termekController.deleteById = async (req, res) => {
+    try {
+        const result = await Termek.deleteById(req.params.id);
+        res.json({ message: 'Termék törölve', result });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+};
+
+// Keresés név alapján
+termekController.getByNev = async (req, res) => {
+    try {
+        const termekek = await Termek.getByName(req.params.nev);
+        res.json(termekek);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+};
+
+// Szűrés kategória/típus szerint
+termekController.getByTipus = async (req, res) => {
+    try {
+        const termekek = await Termek.getByCategory(req.params.tipus);
+        res.json(termekek);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+};
+
+module.exports = termekController;

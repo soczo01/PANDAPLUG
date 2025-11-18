@@ -1,17 +1,12 @@
 
 import 'bootstrap/dist/css/bootstrap.min.css';
-import './App.css';
-
-import TermekLista from './components/TermekLista';
-
+import TermekLista from "./components/TermekLista";
+import "./App.css";
 
 function App() {
   return (
     <div className="App">
-
-      <main>
-        <TermekLista />
-      </main>
+      <TermekLista />
     </div>
   );
 }

@@ -1,40 +1,33 @@
-const express = require('express');
+var express = require('express');
+var path = require('path');
+var cookieParser = require('cookie-parser');
+var logger = require('morgan');
+require('dotenv').config();
+
 const cors = require('cors');
-const mysql = require('mysql2/promise');
-const path = require('path');
 
-const app = express();
-app.use(cors());
+// ROUTER-ek
+var termekRoutes = require('./routes/termekRoutes');
+
+var app = express();
+
+// Middleware-ek
+app.use(logger('dev'));
 app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
+app.use(cookieParser());
 
-// Statikus képek kiszolgálása
+// CORS
+var corsOptions = {
+  credentials: true,
+  origin: 'http://localhost:3001'
+};
+app.use(cors(corsOptions));
+
+// Statikus mappa
 app.use('/images', express.static(path.join(__dirname, 'public/images')));
 
+// ROUTES
+app.use('/api/termekek', termekRoutes);
 
-// DB kapcsolat
-const pool = mysql.createPool({
-  host: 'localhost',
-  user: 'root',
-  password: 'root',
-  database: 'pandaplug1',
-  waitForConnections: true,
-  connectionLimit: 10,
-  queueLimit: 0,
-  charset: 'utf8mb4'
-});
-
-// Termékek lekérése
-app.get('/api/products', async (req, res) => {
-  try {
-    const [rows] = await pool.query('SELECT * FROM view1');
-    res.json(rows);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: 'Hiba a termékek lekérésekor' });
-  }
-});
-
-// Server indítása
-const PORT = 8080;
-app.listen(PORT, () => console.log(`Server fut a ${PORT} porton`));
 module.exports = app;

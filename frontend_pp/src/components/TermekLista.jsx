@@ -1,60 +1,56 @@
-import 'bootstrap/dist/css/bootstrap.min.css';
-import { useEffect, useState } from 'react';
-import Button from 'react-bootstrap/Button';
-import Card from 'react-bootstrap/Card';
+import React, { useEffect, useState } from "react";
 
 export default function TermekLista() {
-  const [termekek, setTermekek] = useState([]);
+    const [termekek, setTermekek] = useState([]);
+    const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    fetch('http://localhost:8080/api/products')
-      .then(res => res.json())
-      .then(data => setTermekek(data))
-      .catch(err => console.error('Hiba:', err));
-  }, []);
+    useEffect(() => {
+        fetch("http://localhost:8080/api/termekek")
+            .then(res => res.json())
+            .then(data => {
+                console.log("BEÉRKEZETT:", data);
+                setTermekek(data);
+                setLoading(false);
+            })
+            .catch(err => {
+                console.error("Hiba:", err);
+                setLoading(false);
+            });
+    }, []);
 
-  const handleKosarba = (t) => {
-    if (t['Státusz'] === 'Nem elérhető') {
-      alert('Ez a termék jelenleg nem elérhető!');
-    } else {
-      alert(`${t['Név']} (${t['Méret']}) a kosárba került!`);
-    }
-  };
+    if (loading) return <p>Betöltés...</p>;
 
-  return (
-    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '20px' }}>
-      {termekek.map((t) => (
-        <Card key={t.termek_id} style={{ width: '18rem' }}>
-          <Card.Img
-            variant="top"
-            // Itt használjuk a kep_id mezőt a kép nevéhez
+    return (
+        <div className="termek-lista">
+            <h1>Termékek</h1>
 
-            
-            src={`http://localhost:8080/images/${t.kep_id}.png`}
-            alt={t['Név']}
-            style={{ height: '180px', objectFit: 'cover' }}
+            <div className="termek-grid">
+                {termekek.map((t) => (
+                    <div className="termek-kartya" key={t.termek_id}>
 
-            />
-          <Card.Body style={{ minHeight: '200px' }}>
-            <Card.Title>{t['Név']}</Card.Title>
+                        {/* KÉP MEGJELENÍTÉSE → kep_id + .png */}
+                        {t.kep_id && (
+                            <img
+                                src={`http://localhost:8080/images/${t.kep_id}.png`}
+                                alt={t.Nev}
+                                className="termek-kep"
+                            />
+                        )}
 
-            <p>Ár: {t['Ár(usd)']} USD</p>
-            <p>Méret: {t['Méret']}</p>
-            <p>Típus: {t['Típus']}</p>
-            <p>Szín: {t['Szín']}</p>
-            <p>Státusz: {t['Státusz']}</p>
+                        <h2>{t.Nev}</h2>
 
-            <Button
-              type="button"
-              variant="primary"
-              disabled={t['Státusz'] !== 'Elérhető'}
-              onClick={() => handleKosarba(t)}
-            >
-              Kosárba
-            </Button>
-          </Card.Body>
-        </Card>
-      ))}
-    </div>
-  );
+                        <p><strong>Ár:</strong> {t["Ár (usd)"]} USD</p>
+                        <p><strong>Típus:</strong> {t.Típus}</p>
+                        <p><strong>Szín:</strong> {t.Szín}</p>
+                        <p><strong>Méret:</strong> {t.Méret}</p>
+                        <p><strong>Státusz:</strong> {t.Státusz}</p>
+
+                        <button className="kosar-btn">
+                            Kosárba
+                        </button>
+                    </div>
+                ))}
+            </div>
+        </div>
+    );
 }

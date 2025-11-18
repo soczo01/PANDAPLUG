@@ -1,14 +1,14 @@
-import mysql from 'mysql2/promise';
+const mysql = require('mysql2/promise');
+require('dotenv').config();
 
 const pool = mysql.createPool({
-  host: 'localhost',
-  user: 'root',
-  password: 'root',
-  database: 'pandaplug1',
+  host: process.env.DB_HOST,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME,
   waitForConnections: true,
   connectionLimit: 10,
-  queueLimit: 0,
-  charset: 'utf8mb4'
+  queueLimit: 0
 });
 
-export default pool;
+module.exports = pool;

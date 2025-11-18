@@ -1,24 +1,65 @@
-import pool from '../config/db.js';
+const pool = require('../config/db');
 
 const Termek = {};
 
+// Összes termék (view1-ből!)
 Termek.getAll = async () => {
-  const [rows] = await pool.query(`
-    SELECT 
-      t.id AS id,
-      t.nev AS title,
-      t.ar_usd AS price,
-      tp.tipus AS cat,
-      sz.szin AS color,
-      m.meret AS size,
-      e.statusz AS statusz
-    FROM termekek t
-    JOIN tipus tp ON t.tipus_id = tp.id
-    JOIN szin sz ON t.szin_id = sz.id
-    JOIN meret m ON t.meret_id = m.id
-    JOIN elerhetoseg e ON t.elerhetoseg_id = e.id
-  `);
-  return rows;
+    const [rows] = await pool.query('SELECT * FROM view1');
+    return rows;
 };
 
-export default Termek;
+// Termék ID alapján (view1)
+Termek.getById = async (id) => {
+    const [rows] = await pool.query(
+        'SELECT * FROM view1 WHERE termek_id = ?',
+        [id]
+    );
+    return rows[0];
+};
+
+// Termék létrehozása (termekek tábla)
+Termek.create = async (data) => {
+    const [rows] = await pool.query(
+        'INSERT INTO termekek SET ?',
+        [data]
+    );
+    return rows;
+};
+
+// Termék frissítése (termekek tábla)
+Termek.updateById = async (id, data) => {
+    const [rows] = await pool.query(
+        'UPDATE termekek SET ? WHERE id = ?',
+        [data, id]
+    );
+    return rows;
+};
+
+// Termék törlése
+Termek.deleteById = async (id) => {
+    const [rows] = await pool.query(
+        'DELETE FROM termekek WHERE id = ?',
+        [id]
+    );
+    return rows;
+};
+
+// KERESÉS név alapján (view1)
+Termek.getByName = async (nev) => {
+    const [rows] = await pool.query(
+        'SELECT * FROM view1 WHERE Nev LIKE ?',
+        [`%${nev}%`]
+    );
+    return rows;
+};
+
+// SZŰRÉS kategória/típus szerint (view1)
+Termek.getByCategory = async (tipus) => {
+    const [rows] = await pool.query(
+        'SELECT * FROM view1 WHERE Típus = ?',
+        [tipus]
+    );
+    return rows;
+};
+
+module.exports = Termek;
