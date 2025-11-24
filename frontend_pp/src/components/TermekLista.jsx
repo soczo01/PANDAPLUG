@@ -30,11 +30,11 @@ export default function TermekLista({ selectedCategory }) {
             case "shirts":
                 return t.Típus === "polo";
             case "hoodies":
-                return t.Típus === "hoodie";
+                return t.Típus === "pulover";
             case "pants":
-                return t.Típus === "pants" || t.Típus === "nadrag";
+                return t.Típus === "nadrag";
             case "shorts":
-                return t.Típus === "shorts" || t.Típus === "short";
+                return t.Típus === "rovidnadrag";
             default:
                 return true;
         }
@@ -77,8 +77,24 @@ export default function TermekLista({ selectedCategory }) {
                             />
 
                             <div className="card-body">
-                                <h5 className="card-title">{t.Nev}</h5>
-                                <p className="card-text">{t["Ár (usd)"]} USD</p>
+                                <div className="card-body">
+
+    {/* TERMÉKNÉV */}
+    <h5 className="card-title">{t["Név"]}</h5>
+
+    {/* ÁR */}
+    <p className="card-text fw-bold">
+        ${t["Ár(usd)"]}
+    </p>
+
+    {/* MÉRET */}
+    <p className="text-muted mb-2">
+        Méret: <strong>{t["Méret"]}</strong>
+    </p>
+
+
+</div>
+
 
                                 <button
                                     className="btn btn-dark w-100"
