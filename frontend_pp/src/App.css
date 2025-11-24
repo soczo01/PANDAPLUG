@@ -170,50 +170,79 @@ button,
 }
 
 
-.termek-lista {
-    padding: 20px;
-}
-
+/* GRID LAYOUT */
 .termek-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-    gap: 20px;
+    gap: 40px;
+    padding: 20px;
 }
 
-.termek-kartya {
-    background: white;
+/* CARD */
+.product-card {
+    background: #ffffff;
+    border-radius: 14px;
     padding: 15px;
-    border-radius: 10px;
-    border: 1px solid #ddd;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-    transition: 0.2s;
+    box-shadow: 0px 4px 15px rgba(0,0,0,0.1);
+    transition: 0.3s ease;
+    text-align: center;
 }
 
-.termek-kartya:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+.product-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0px 10px 30px rgba(0,0,0,0.18);
 }
 
-.termek-kep {
+/* IMAGE WRAPPER */
+.product-image-wrapper {
     width: 100%;
-    height: 180px;
-    object-fit: cover;
-    border-radius: 8px;
-    margin-bottom: 10px;
+    height: 280px;
+    background: #f8f8f8;
+    border-radius: 12px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
 }
 
+/* IMAGE */
+.product-image {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    transition: 0.4s ease;
+}
+
+.product-card:hover .product-image {
+    transform: scale(1.07);
+}
+
+/* PRODUCT NAME */
+.product-name {
+    font-size: 17px;
+    font-weight: 600;
+    margin-top: 14px;
+}
+
+/* PRICE */
+.product-price {
+    font-size: 16px;
+    font-weight: 500;
+    margin-bottom: 12px;
+    color: #222;
+}
+
+/* BUTTON */
 .kosar-btn {
     width: 100%;
-    padding: 10px;
-    background: #0b78e3;
+    background-color: #111;
+    padding: 10px 0;
     color: white;
+    border-radius: 8px;
     border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 16px;
+    transition: 0.3s ease;
 }
 
 .kosar-btn:hover {
-    background: #095bb1;
+    background-color: #444;
 }
-

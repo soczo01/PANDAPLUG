@@ -1,13 +1,19 @@
-
-import 'bootstrap/dist/css/bootstrap.min.css';
+import "bootstrap/dist/css/bootstrap.min.css";
+import Menu from "./components/Menu";
 import TermekLista from "./components/TermekLista";
-import "./App.css";
+import { CartProvider } from "./context/CartContext";
+import { useState } from "react";
 
 function App() {
+  const [selectedCategory, setSelectedCategory] = useState("ALL");
+
   return (
-    <div className="App">
-      <TermekLista />
-    </div>
+    <CartProvider>
+      <Menu onCategoryChange={setSelectedCategory} />
+      <div className="container mt-4">
+        <TermekLista selectedCategory={selectedCategory} />
+      </div>
+    </CartProvider>
   );
 }
 
