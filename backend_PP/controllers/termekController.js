@@ -68,4 +68,25 @@ termekController.getByTipus = async (req, res) => {
     }
 };
 
+termekController.filter = async (req, res) => {
+    try {
+        const { tipus, meret, szin, marka, minAr, maxAr } = req.query;
+
+        const termekek = await Termek.filter({
+            tipus,
+            meret,
+            szin,
+            marka,
+            minAr,
+            maxAr
+        });
+
+        res.json(termekek);
+
+    } catch (error) {
+        console.error("Hiba szűréskor:", error);
+        res.status(500).json({ error: "Hiba a szűrés közben" });
+    }
+};
+
 module.exports = termekController;

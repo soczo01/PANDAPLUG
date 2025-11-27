@@ -8,7 +8,7 @@ const cors = require('cors');
 
 // ROUTER-ek
 var termekRoutes = require('./routes/termekRoutes');
-
+var filterRoutes = require("./routes/filterRoutes");
 var app = express();
 
 // Middleware-ek
@@ -20,7 +20,7 @@ app.use(cookieParser());
 // CORS
 var corsOptions = {
   credentials: true,
-  origin: 'http://localhost:3001'
+  origin: 'http://localhost:3000'
 };
 app.use(cors(corsOptions));
 
@@ -29,5 +29,7 @@ app.use('/images', express.static(path.join(__dirname, 'public/images')));
 
 // ROUTES
 app.use('/api/termekek', termekRoutes);
+
+app.use("/api/filters", filterRoutes);
 
 module.exports = app;

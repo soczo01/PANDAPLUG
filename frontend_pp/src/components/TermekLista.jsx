@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useCart } from "../context/CartContext";
 
-export default function TermekLista({ selectedCategory }) {
+export default function TermekLista({ selectedCategory, filters }) {
+
     const [termekek, setTermekek] = useState([]);
     const [loading, setLoading] = useState(true);
     const { setCart } = useCart();
@@ -23,22 +24,28 @@ export default function TermekLista({ selectedCategory }) {
     // nadrágok → pants
     // rövidnadrág → shorts
 
-    const filteredProducts = termekek.filter((t) => {
-        if (!selectedCategory || selectedCategory === "ALL") return true;
+    // TermekLista.jsx
 
-        switch (selectedCategory) {
-            case "shirts":
-                return t.Típus === "polo";
-            case "hoodies":
-                return t.Típus === "pulover";
-            case "pants":
-                return t.Típus === "nadrag";
-            case "shorts":
-                return t.Típus === "rovidnadrag";
-            default:
-                return true;
-        }
-    });
+const filteredProducts = termekek
+  .filter((t) => {
+      if (selectedCategory !== "ALL") {
+          if (selectedCategory === "shirts" && t.Típus !== "polo") return false;
+          if (selectedCategory === "hoodies" && t.Típus !== "pulover") return false;
+          if (selectedCategory === "pants" && t.Típus !== "nadrag") return false;
+          if (selectedCategory === "shorts" && t.Típus !== "rovidnadrag") return false;
+      }
+
+      if (filters.size !== "ALL" && t.Méret !== filters.size) return false;
+
+      if (filters.color !== "ALL" && t.Szín !== filters.color) return false;
+
+      return true;
+  })
+  .sort((a, b) => {
+      if (filters.price === "ASC") return a["Ár(usd)"] - b["Ár(usd)"];
+      if (filters.price === "DESC") return b["Ár(usd)"] - a["Ár(usd)"];
+      return 0;
+  });
 
     const handleAddToCart = (termek_id) => {
         fetch("http://localhost:8080/api/cart/add", {

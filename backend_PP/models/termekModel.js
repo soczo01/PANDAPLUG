@@ -62,4 +62,44 @@ Termek.getByCategory = async (tipus) => {
     return rows;
 };
 
+Termek.filter = async ({ tipus, meret, szin, marka, minAr, maxAr }) => {
+    let sql = "SELECT * FROM view1 WHERE 1=1 ";
+    const params = [];
+
+    if (tipus) {
+        sql += " AND Típus = ? ";
+        params.push(tipus);
+    }
+
+    if (meret) {
+        sql += " AND Méret = ? ";
+        params.push(meret);
+    }
+
+    if (szin) {
+        sql += " AND Szín = ? ";
+        params.push(szin);
+    }
+
+    if (marka) {
+    sql += " AND Márka = ? ";
+    params.push(marka);
+    }
+
+    if (minAr) {
+        sql += " AND `Ár(usd)` >= ? ";
+        params.push(minAr);
+    }
+
+    if (maxAr) {
+        sql += " AND `Ár(usd)` <= ? ";
+        params.push(maxAr);
+    }
+
+    const [rows] = await pool.query(sql, params);
+    return rows;
+};
+
+
+
 module.exports = Termek;
