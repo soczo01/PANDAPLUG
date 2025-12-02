@@ -1,61 +1,116 @@
 import React, { useEffect, useState } from "react";
 import { useCart } from "../context/CartContext";
+import Details from "./Details";
 
 export default function TermekLista({ selectedCategory, filters }) {
-
     const [termekek, setTermekek] = useState([]);
     const [loading, setLoading] = useState(true);
+
+    const [page, setPage] = useState(1);
+    const [loadingMore, setLoadingMore] = useState(false);
+    const [hasMore, setHasMore] = useState(true);
+
+    const [selectedProduct, setSelectedProduct] = useState(null);
     const { setCart } = useCart();
 
+    // ------------ TERMÉKEK BETÖLTÉSE LAPOKBAN --------------
+    const loadProducts = async (nextPage = 1) => {
+    try {
+        const res = await fetch(
+            `http://localhost:8080/api/termekek/paged?page=${nextPage}&limit=16`
+        );
+        const data = await res.json();
+
+        // 🔥 EZT ITT KELL ELHELYEZNI, SEHOL MÁSHOL
+        if (!Array.isArray(data)) {
+            console.error("Hibás adat érkezett:", data);
+            setHasMore(false);
+            return;
+        }
+
+        if (data.length === 0) {
+            setHasMore(false);
+            return;
+        }
+
+        if (nextPage === 1) {
+            setTermekek(data);
+        } else {
+            setTermekek(prev => [...prev, ...data]);
+        }
+
+    } catch (err) {
+        console.error("Betöltési hiba:", err);
+    } finally {
+        setLoading(false);
+        setLoadingMore(false);
+    }
+};
+
+    // ------------ ELSŐ BETÖLTÉS --------------
     useEffect(() => {
-        fetch("http://localhost:8080/api/termekek")
-            .then(res => res.json())
-            .then(data => {
-                setTermekek(data);
-                setLoading(false);
-            })
-            .catch(() => setLoading(false));
+        loadProducts(1);
     }, []);
 
-    // ---------- KATEGÓRIA SZŰRÉS ----------
-    // A view1 "Típus" mező APO-értékei:
-    // pólók → polo
-    // pulcsik → hoodie
-    // nadrágok → pants
-    // rövidnadrág → shorts
+    // ------------ GÖRGETÉS LISTENER --------------
+    useEffect(() => {
+        const handleScroll = () => {
+            if (!hasMore || loadingMore) return;
 
-    // TermekLista.jsx
+            if (
+                window.innerHeight + window.scrollY >=
+                document.body.offsetHeight - 500
+            ) {
+                setLoadingMore(true);
+                setPage(prev => prev + 1);
+            }
+        };
 
-const filteredProducts = termekek
-  .filter((t) => {
-      if (selectedCategory !== "ALL") {
-          if (selectedCategory === "shirts" && t.Típus !== "polo") return false;
-          if (selectedCategory === "hoodies" && t.Típus !== "pulover") return false;
-          if (selectedCategory === "pants" && t.Típus !== "nadrag") return false;
-          if (selectedCategory === "shorts" && t.Típus !== "rovidnadrag") return false;
-      }
+        window.addEventListener("scroll", handleScroll);
+        return () => window.removeEventListener("scroll", handleScroll);
+    }, [hasMore, loadingMore]);
 
-      if (filters.size !== "ALL" && t.Méret !== filters.size) return false;
+    // ------------ LAP VÁLTOZÁSAKOR TÖLTÜNK --------------
+    useEffect(() => {
+        if (page > 1) loadProducts(page);
+    }, [page]);
 
-      if (filters.color !== "ALL" && t.Szín !== filters.color) return false;
+    // ---------------- SZŰRÉS (mint eddig) ------------------
+    const filteredProducts = termekek
+        .filter((t) => {
+            // KATEGÓRIA
+            if (selectedCategory !== "ALL") {
+                const map = {
+                    shirts: "polo",
+                    hoodies: "pulover",
+                    pants: "nadrag",
+                    shorts: "rovidnadrag"
+                };
+                if (t["Típus"] !== map[selectedCategory]) return false;
+            }
 
-      return true;
-  })
-  .sort((a, b) => {
-      if (filters.price === "ASC") return a["Ár(usd)"] - b["Ár(usd)"];
-      if (filters.price === "DESC") return b["Ár(usd)"] - a["Ár(usd)"];
-      return 0;
-  });
+            if (filters.brand !== "ALL" && t["Márka"] !== filters.brand) return false;
+            if (filters.size !== "ALL" && t["Méret"] !== filters.size) return false;
+            if (filters.color !== "ALL" && t["Szín"] !== filters.color) return false;
 
+            return true;
+        })
+        .sort((a, b) => {
+            if (filters.price === "ASC") return a["Ár(usd)"] - b["Ár(usd)"];
+            if (filters.price === "DESC") return b["Ár(usd)"] - a["Ár(usd)"];
+            return 0;
+        });
+
+    // ------------ KOSÁRBA --------------
     const handleAddToCart = (termek_id) => {
         fetch("http://localhost:8080/api/cart/add", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
                 user_id: 1,
-                termek_id: termek_id,
-                mennyiseg: 1
-            })
+                termek_id,
+                mennyiseg: 1,
+            }),
         })
             .then(res => res.json())
             .then(() => {
@@ -69,11 +124,27 @@ const filteredProducts = termekek
 
     return (
         <div className="container mt-4">
+
+            {/* Részletes nézet */}
+            <Details
+    product={selectedProduct}
+    onClose={() => setSelectedProduct(null)}
+    onAddToCart={handleAddToCart}
+    onSelectProduct={(p) => setSelectedProduct(p)}
+/>
+
+
+
             <h1 className="mb-4 text-center">Termékek</h1>
 
             <div className="row g-4">
                 {filteredProducts.map((t) => (
-                    <div className="col-6 col-md-4 col-lg-3" key={t.termek_id}>
+                    <div
+                        className="col-6 col-md-4 col-lg-3"
+                        key={t.termek_id}
+                        onClick={() => setSelectedProduct(t)}
+                        style={{ cursor: "pointer" }}
+                    >
                         <div className="card h-100 text-center shadow-sm">
 
                             <img
@@ -84,28 +155,18 @@ const filteredProducts = termekek
                             />
 
                             <div className="card-body">
-                                <div className="card-body">
-
-    {/* TERMÉKNÉV */}
-    <h5 className="card-title">{t["Név"]}</h5>
-
-    {/* ÁR */}
-    <p className="card-text fw-bold">
-        ${t["Ár(usd)"]}
-    </p>
-
-    {/* MÉRET */}
-    <p className="text-muted mb-2">
-        Méret: <strong>{t["Méret"]}</strong>
-    </p>
-
-
-</div>
-
+                                <h5 className="card-title">{t["Név"]}</h5>
+                                <p className="card-text.fw-bold">${t["Ár(usd)"]}</p>
+                                <p className="text-muted mb-2">
+                                    Méret: <strong>{t["Méret"]}</strong>
+                                </p>
 
                                 <button
                                     className="btn btn-dark w-100"
-                                    onClick={() => handleAddToCart(t.termek_id)}
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        handleAddToCart(t.termek_id);
+                                    }}
                                 >
                                     Kosárba
                                 </button>
@@ -116,6 +177,13 @@ const filteredProducts = termekek
                 ))}
             </div>
 
+            {loadingMore && <p className="text-center mt-4">Töltés...</p>}
+
+            {!hasMore && (
+                <p className="text-center mt-4 text-muted">
+                    Nincsen több termék.
+                </p>
+            )}
         </div>
     );
 }

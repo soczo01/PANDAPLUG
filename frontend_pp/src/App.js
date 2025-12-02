@@ -14,6 +14,7 @@ function App() {
   const [filters, setFilters] = useState({
     size: "ALL",
     color: "ALL",
+    brand: "ALL",
     price: "ALL",
   });
 

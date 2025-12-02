@@ -8,14 +8,22 @@ export default function Filter({ onFilterChange }) {
     const [priceRange, setPriceRange] = useState(null);
 
     useEffect(() => {
+        // MÉRETEK
         fetch("http://localhost:8080/api/filters/sizes")
             .then(res => res.json())
             .then(data => setSizes(Array.isArray(data) ? data : []));
 
+        // SZÍNEK
         fetch("http://localhost:8080/api/filters/colors")
             .then(res => res.json())
             .then(data => setColors(Array.isArray(data) ? data : []));
 
+        // 🔥 MÁRKÁK – EZ HIÁNYZOTT!
+        fetch("http://localhost:8080/api/filters/brands")
+            .then(res => res.json())
+            .then(data => setBrands(Array.isArray(data) ? data : []));
+
+        // ÁRTARTOMÁNY
         fetch("http://localhost:8080/api/filters/prices")
             .then(res => res.json())
             .then(data => setPriceRange(data));
@@ -24,36 +32,31 @@ export default function Filter({ onFilterChange }) {
     return (
         <NavDropdown title="Filter" id="filter-dropdown" className="text-white">
 
+            {/* ---- MÁRKA --- */}
             <NavDropdown.Header>Márka</NavDropdown.Header>
 
-            {/* --- ÖSSZES MÁRKA --- */}
-            <NavDropdown.Item
-                onClick={() => onFilterChange({ brand: "ALL" })}
-            >
+            <NavDropdown.Item onClick={() => onFilterChange({ brand: "ALL" })}>
                 Összes
             </NavDropdown.Item>
 
-            {/* --- DINAMIKUS MÁRKÁK --- */}
-            {brands.map((c) => (
+            {brands.map((b) => (
                 <NavDropdown.Item
-                    key={c.markanev}
-                    onClick={() => onFilterChange({ brand: c.markanev })}
+                    key={b.markanev}
+                    onClick={() => onFilterChange({ brand: b.markanev })}
                 >
-                    {c.markanev}
+                    {b.markanev}
                 </NavDropdown.Item>
             ))}
 
-            {/* MÉRET */}
+            <NavDropdown.Divider />
+
+            {/* ---- MÉRET ---- */}
             <NavDropdown.Header>Méret</NavDropdown.Header>
 
-            {/* --- ÖSSZES MÉRET --- */}
-            <NavDropdown.Item 
-                onClick={() => onFilterChange({ size: "ALL" })}
-            >
+            <NavDropdown.Item onClick={() => onFilterChange({ size: "ALL" })}>
                 Összes
             </NavDropdown.Item>
 
-            {/* --- DINAMIKUS MÉRETEK --- */}
             {sizes.map((s) => (
                 <NavDropdown.Item
                     key={s.meretnev}
@@ -65,17 +68,13 @@ export default function Filter({ onFilterChange }) {
 
             <NavDropdown.Divider />
 
-            {/* SZÍN */}
+            {/* ---- SZÍN ---- */}
             <NavDropdown.Header>Szín</NavDropdown.Header>
 
-            {/* --- ÖSSZES SZÍN --- */}
-            <NavDropdown.Item
-                onClick={() => onFilterChange({ color: "ALL" })}
-            >
+            <NavDropdown.Item onClick={() => onFilterChange({ color: "ALL" })}>
                 Összes
             </NavDropdown.Item>
 
-            {/* --- DINAMIKUS SZÍNEK --- */}
             {colors.map((c) => (
                 <NavDropdown.Item
                     key={c.szinnev}
@@ -87,15 +86,15 @@ export default function Filter({ onFilterChange }) {
 
             <NavDropdown.Divider />
 
-            {/* ÁR */}
+            {/* ---- ÁR ---- */}
             <NavDropdown.Header>Ár</NavDropdown.Header>
             <NavDropdown.Item onClick={() => onFilterChange({ price: "ASC" })}>
                 Ár: alacsony → magas
             </NavDropdown.Item>
+
             <NavDropdown.Item onClick={() => onFilterChange({ price: "DESC" })}>
                 Ár: magas → alacsony
             </NavDropdown.Item>
-
         </NavDropdown>
     );
 }
