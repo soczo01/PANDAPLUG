@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useCart } from "../context/CartContext";
 import Details from "./Details";
+import Spinner from 'react-bootstrap/Spinner';
 
 export default function TermekLista({ selectedCategory, filters }) {
     const [termekek, setTermekek] = useState([]);
@@ -14,14 +15,13 @@ export default function TermekLista({ selectedCategory, filters }) {
     const { setCart } = useCart();
 
     // ------------ TERMÉKEK BETÖLTÉSE LAPOKBAN --------------
-    const loadProducts = async (nextPage = 1) => {
+    const loadProducts = async (nextPage = 0) => {
     try {
         const res = await fetch(
             `http://localhost:8080/api/termekek/paged?page=${nextPage}&limit=16`
         );
         const data = await res.json();
 
-        // 🔥 EZT ITT KELL ELHELYEZNI, SEHOL MÁSHOL
         if (!Array.isArray(data)) {
             console.error("Hibás adat érkezett:", data);
             setHasMore(false);
@@ -33,7 +33,7 @@ export default function TermekLista({ selectedCategory, filters }) {
             return;
         }
 
-        if (nextPage === 1) {
+        if (nextPage === 0) {
             setTermekek(data);
         } else {
             setTermekek(prev => [...prev, ...data]);
@@ -49,9 +49,23 @@ export default function TermekLista({ selectedCategory, filters }) {
 
     // ------------ ELSŐ BETÖLTÉS --------------
     useEffect(() => {
+        setLoading(true);
         loadProducts(1);
     }, []);
 
+    // ------------ KATEGÓRIA/FILTER VÁLTÁSKOR ÚJRA TÖLTÜNK --------------
+    useEffect(() => {
+        setLoading(true);
+        setPage(1);
+        setHasMore(true);
+        loadProducts(1);
+    }, [
+    selectedCategory,
+    filters?.brand,
+    filters?.size,
+    filters?.color,
+    filters?.price
+]);
     // ------------ GÖRGETÉS LISTENER --------------
     useEffect(() => {
         const handleScroll = () => {
@@ -120,7 +134,13 @@ export default function TermekLista({ selectedCategory, filters }) {
             });
     };
 
-    if (loading) return <p>Betöltés...</p>;
+    if (loading) return (
+        <div className="d-flex justify-content-center align-items-center" style={{minHeight: '40vh'}}>
+            <Spinner animation="border" variant="light" role="status" style={{width: '3rem', height: '3rem'}}>
+                <span className="visually-hidden">Betöltés...</span>
+            </Spinner>
+        </div>
+    );
 
     return (
         <div className="container mt-4">

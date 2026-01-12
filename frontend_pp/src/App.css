@@ -216,132 +216,322 @@ h1, h2, h3 {
   font-family: "Pervitina", sans-serif;
 }
 
-.details-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0,0,0,0.85);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    backdrop-filter: blur(4px);
-    z-index: 999;
-    animation: fadeIn 0.25s ease-out;
+/* Kosár modal stílusok */
+.cart-modal-card {
+  background: #23272f;
+  border-radius: 18px !important;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.4);
+  color: #f5f5f5;
+  padding: 0;
+  overflow: hidden !important; /* minden szinten! */
+  position: relative;
+}
+.cart-modal-header,
+.cart-modal-body,
+.cart-modal-footer {
+  background: #23272f !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+.cart-modal-header {
+  border-radius: 18px 18px 0 0 !important;
+}
+.cart-modal-footer {
+  border-radius: 0 0 18px 18px !important;
+}
+.cart-modal-title {
+  color: #f5f5f5;
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+.cart-modal-body {
+  background: #23272f;
+  /* nincs border-radius, hogy ne lógjon ki fehér rész */
+  padding: 1.5rem 1.5rem 0.5rem 1.5rem;
+}
+.cart-modal-item {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 1.5rem;
+  background: #2c313a;
+  border-radius: 12px;
+  padding: 1rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+}
+.cart-modal-image {
+  width: 150px;
+  height: 300px;
+  object-fit: contain;
+  border-radius: 10px;
+  margin-right: 1.5rem;
+
+}
+.cart-modal-details {
+  flex: 1;
+}
+.cart-modal-title2 {
+  font-size: 1.2rem;
+  color: #f5f5f5;
+  margin-bottom: 0.5rem;
+}
+.cart-modal-price {
+  color: #ffb347;
+  font-size: 1.1rem;
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+}
+.cart-modal-remove {
+  margin-top: 0.5rem;
+  background: #d9534f;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.95rem;
+}
+.cart-modal-remove:hover {
+  background: #c9302c;
+}
+.cart-modal-footer {
+  background: #23272f;
+  border-top: 1px solid #444;
+  border-radius: 0 0 18px 18px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}
+.cart-modal-clear {
+  background: #444;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+}
+.cart-modal-clear:hover {
+  background: #222;
+}
+.cart-modal-close {
+  background: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+}
+.cart-modal-close:hover {
+  background: #0056b3;
+}
+.cart-modal-empty {
+  color: #bbb;
+  text-align: center;
+  font-size: 1.1rem;
+  margin: 2rem 0;
+}
+.cart-btn {
+  position: relative;
+  background: #23272f;
+  color: #fff;
+  border-radius: 50%;
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+}
+.cart-btn:hover {
+  background: #2c313a;
+}
+.cart-badge {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  background: #ffb347;
+  color: #23272f;
+  border-radius: 18px;
+  width: 22px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  font-weight: bold;
+  border: 2px solid #23272f;
 }
 
-/* ---- KONTÉNER ---- */
+/* Details modal stílusok - pontosan a klasszikus világos kinézethez */
+
 .details-card {
-    background: #0f0f0f;
-    padding: 25px;
-    border-radius: 18px;
-    width: 900px;
-    height: 550px;
-    display: flex;
-    gap: 25px;
-    position: relative;
-    border: 1px solid #333;
+  background: #181a20 !important;
+  border-radius: 24px !important;
+  color: #f5f5f5 !important;
+  box-shadow: 0 4px 32px rgba(0,0,0,0.28);
+  padding: 0 !important;
+  max-width: 900px;
+  margin: 40px auto;
+  min-height: 520px;
 }
-
-/* BAL OLDAL - kép fix helyen */
+.details-content-row {
+  display: flex;
+  flex-direction: row;
+  gap: 40px;
+  padding: 32px 32px 0 32px;
+}
+.details-close {
+  position: right;
+  top: 24px;
+  right: 32px;
+  font-size: 2.5rem;
+  color: #f5f5f5;
+  cursor: pointer;
+  z-index: 10;
+  font-weight: 400;
+  transition: color 0.2s;
+}
+.details-close:hover {
+  color: #3f6de0;
+}
 .details-left {
-    width: 45%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  min-width: 340px;
 }
-
 .details-image {
-    width: 100%;
-    height: 420px;
-    object-fit: contain;
-}
+  width: 350px;
+  height: 450px;
+  object-fit: contain;
+  border-radius: 16px;
 
-/* JOBB OLDAL */
+  
+ 
+}
 .details-right {
-    width: 55%;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  gap: 10px;
+  min-width: 320px;
 }
-
-.related-title {
-    margin-top: 40px;
-    font-size: 26px;
+.details-title {
+  font-size: 2.2rem;
+  color: #f5f5f5;
+  margin-bottom: 12px;
+  font-weight: 400;
+  font-family: 'BroshK', Arial, sans-serif;
 }
-
-.related-slider {
-    margin-top: 15px;
-    width: 100%;
-    display: flex;
-    gap: 18px;
-    overflow-x: auto;
-    scroll-behavior: smooth;
-    padding-bottom: 10px;
-    scrollbar-width: none;
+.details-price {
+  color: #ffb347;
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 10px;
 }
-
-.related-slider::-webkit-scrollbar {
-    display: none;
+.details-right p {
+  font-size: 1.1rem;
+  margin-bottom: 6px;
+  color: #f5f5f5;
 }
-
-.related-card {
-    min-width: 120px;
-    background: #151515;
-    border-radius: 12px;
-    height: 150px;
-    padding: 10px;
-    text-align: center;
-    cursor: pointer;
-    border: 1px solid #333;
-    transition: 0.25s;
+.details-right strong {
+  font-weight: 700;
+  color: #fff;
 }
-
-.related-card:hover {
-    transform: scale(1.05);
-}
-
-.related-img {
-    width: 100%;
-    height: 110px;
-    object-fit: contain;
-}
-
-.related-name {
-    font-size: 13px;
-    margin-top: 5px;
-}
-
-.related-price {
-    font-size: 14px;
-    font-weight: bold;
-}
-
-
 .details-cart-btn {
-    width: 100%;
-    padding: 14px;
-    background: #202020;
-    border: 1px solid #444;
-    color: white;
-    border-radius: 12px;
-    margin-top: 20px;
-    transition: 0.2s;
-    font-size: 22px;
+  background: #23272f;
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  margin-top: 24px;
+  font-size: 1.1rem;
+  font-weight: 700;
+  width: 100%;
+  padding: 16px 0;
+  letter-spacing: 1px;
+  transition: background 0.2s;
 }
-
 .details-cart-btn:hover {
-    background: #3a3a3a;
+  background: #3f6de0;
+  color: #fff;
+}
+.details-related-title {
+  font-size: 1.3rem;
+  color: #f5f5f5;
+  margin: 32px 0 12px 0;
+  font-weight: 600;
+}
+.details-related-list {
+  display: flex;
+  gap: 18px;
+  overflow-x: auto;
+  padding: 0 0 24px 0;
+}
+.details-related-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 90px;
+  cursor: pointer;
+  background: #23272f;
+  border-radius: 10px;
+  border: 1px solid #222;
+  padding: 8px 6px 6px 6px;
+  transition: box-shadow 0.2s, border 0.2s, background 0.2s;
+}
+.details-related-item:hover {
+  box-shadow: 0 2px 12px #3f6de033;
+  border: 1.5px solid #3f6de0;
+  background: #181a20;
+}
+.details-related-img {
+  width: 60px;
+  height: 80px;
+  object-fit: contain;
+  border-radius: 8px;
+  background: #181a20;
+  border: none;
+}
+.details-related-item span {
+  font-size: 0.9rem;
+  color: #f5f5f5;
+  margin-top: 4px;
+  text-align: center;
+  font-weight: 600;
 }
 
+/* Details modal overlay és card animáció, középre pozícionálás, előugró effekt */
+.details-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(20, 20, 20, 0.92) !important;
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: fadeIn 0.25s;
+}
+.details-card {
+  position: relative;
+  background: #181a20 !important;
+  border-radius: 24px !important;
+  color: #f5f5f5 !important;
+  box-shadow: 0 8px 48px 0 rgba(0,0,0,0.38);
+  padding: 0 !important;
+  max-width: 900px;
+  min-width: 340px;
+  min-height: 520px;
+  margin: 0;
+  animation: zoomIn 0.22s cubic-bezier(.4,1.6,.6,1);
+  display: flex;
+  flex-direction: column;
+  overflow: visible;
+}
 @keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
-
 @keyframes zoomIn {
-    from { transform: scale(0.75); }
-    to { transform: scale(1); }
+  from { transform: scale(0.85); opacity: 0.7; }
+  to { transform: scale(1); opacity: 1; }
 }
-
 
 @import "slick-carousel/slick/slick.css";
 @import "slick-carousel/slick/slick-theme.css";

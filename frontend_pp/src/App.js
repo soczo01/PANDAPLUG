@@ -1,55 +1,61 @@
-// App.js
-import "bootstrap/dist/css/bootstrap.min.css";
+
 import "./App.css";
+import "bootstrap/dist/css/bootstrap.min.css";
 import Menu from "./components/Menu";
+import Kosar from "./components/Kosar";
 import Filter from "./components/Filter";
 import TermekLista from "./components/TermekLista";
 import { CartProvider } from "./context/CartContext";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import LoginForm from "./components/LoginForm";
+import RegForm from "./components/RegForm";
+import { jwtDecode } from "jwt-decode";
+import { getToken, logout } from "./api";
 
 function App() {
-  const [selectedCategory, setSelectedCategory] = useState("ALL");
+    const [user, setUser] = useState(null);
+    const [showRegister, setShowRegister] = useState(false);
 
-  // 🔥 Filter state
-  const [filters, setFilters] = useState({
-    size: "ALL",
-    color: "ALL",
-    brand: "ALL",
-    price: "ALL",
-  });
+    useEffect(() => {
+        const token = getToken();
+        if (token) {
+            const decoded = jwtDecode(token);
+            setUser({ username: decoded.username, role: decoded.role });
+        }
+    }, []);
 
-  // 🔥 EZ HIÁNYZOTT!
-  const handleFilterChange = (newFilter) => {
-    setFilters((prev) => ({
-      ...prev,
-      ...newFilter,
-    }));
-  };
-
-  return (
-    <CartProvider>
-
-      <div className="header-image">
-        <img src="https://wallpapers.com/images/featured/y2k-star-28rf6krz5u3ryvqd.jpg" alt="header"/>
-      </div>
-
-      {/* Menü ugyanúgy marad */}
-      <Menu onCategoryChange={setSelectedCategory} />
-
-      {/* 🔥 FILTER HOZZÁADVA */}
-      <div className="container">
-        <Filter onFilterChange={handleFilterChange} />
-      </div>
-
-      <div className="container mt-4">
-        <TermekLista
-          selectedCategory={selectedCategory}
-          filters={filters}
-        />
-      </div>
-
-    </CartProvider>
-  );
+    return (
+        <CartProvider>
+            {!user ? (
+                <div className="container mt-5 d-flex justify-content-center">
+                    {showRegister ? (
+                        <RegForm onSwitchToLogin={() => setShowRegister(false)} />
+                    ) : (
+                        <LoginForm
+                            onLogin={setUser}
+                            onSwitchToRegister={() => setShowRegister(true)}
+                        />
+                    )}
+                </div>
+            ) : (
+                <>
+                    <Menu />
+                    <Kosar />
+                    <button
+                        className="btn btn-secondary"
+                        onClick={() => {
+                            logout();
+                            setUser(null);
+                        }}
+                    >
+                        Kijelentkezés
+                    </button>
+                    <Filter />
+                    <TermekLista />
+                </>
+            )}
+        </CartProvider>
+    );
 }
 
 export default App;

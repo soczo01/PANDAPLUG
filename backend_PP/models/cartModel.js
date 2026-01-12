@@ -8,12 +8,13 @@ Cart.getCart = async (user_id) => {
             cart_items.id AS item_id,
             cart_items.mennyiseg,
             termekek.id AS termek_id,
-            v.Nev,
-            v.\`Ár (usd)\`,
+            v.Név,
+            v.\`Ár(usd)\`,
             v.Típus,
             v.Szín,
             v.Méret,
             v.Státusz,
+            v.Márka,
             v.kep_id
         FROM cart
         JOIN cart_items ON cart.id = cart_items.cart_id

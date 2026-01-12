@@ -9,7 +9,11 @@ const cors = require('cors');
 // ROUTER-ek
 var termekRoutes = require('./routes/termekRoutes');
 var filterRoutes = require("./routes/filterRoutes");
+
+var cartRoutes = require('./routes/cartRoutes');
+var authRoutes = require('./routes/AuthRouter');
 var app = express();
+
 
 // Middleware-ek
 app.use(logger('dev'));
@@ -31,5 +35,9 @@ app.use('/images', express.static(path.join(__dirname, 'public/images')));
 app.use('/api/termekek', termekRoutes);
 
 app.use("/api/filters", filterRoutes);
+
+app.use('/api/cart', cartRoutes);
+
+app.use('/api/auth', authRoutes);
 
 module.exports = app;
