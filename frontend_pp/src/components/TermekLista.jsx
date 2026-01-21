@@ -3,91 +3,71 @@ import { useCart } from "../context/CartContext";
 import Details from "./Details";
 import Spinner from 'react-bootstrap/Spinner';
 
-export default function TermekLista({ selectedCategory, filters }) {
+export default function TermekLista({ selectedCategory, filters, searchQuery, userId }) {
     const [termekek, setTermekek] = useState([]);
     const [loading, setLoading] = useState(true);
-
     const [page, setPage] = useState(1);
     const [loadingMore, setLoadingMore] = useState(false);
     const [hasMore, setHasMore] = useState(true);
-
     const [selectedProduct, setSelectedProduct] = useState(null);
     const { setCart } = useCart();
 
-    // ------------ TERMÉKEK BETÖLTÉSE LAPOKBAN --------------
-    const loadProducts = async (nextPage = 0) => {
-    try {
-        const res = await fetch(
-            `http://localhost:8080/api/termekek/paged?page=${nextPage}&limit=16`
-        );
-        const data = await res.json();
-
-        if (!Array.isArray(data)) {
-            console.error("Hibás adat érkezett:", data);
+    // Új: keresési módban lapozva töltsük be az eredményeket
+    const loadProducts = async (nextPage = 1, query = "") => {
+        try {
+            let url;
+            if (query && query.trim() !== "") {
+                url = `http://localhost:8080/api/termekek/search?q=${encodeURIComponent(query)}&page=${nextPage}&limit=16`;
+            } else {
+                url = `http://localhost:8080/api/termekek/paged?page=${nextPage}&limit=16`;
+            }
+            const res = await fetch(url);
+            const data = await res.json();
+            if (!Array.isArray(data)) {
+                setHasMore(false);
+                return;
+            }
+            if (data.length === 0) {
+                setHasMore(false);
+                return;
+            }
+            if (nextPage === 1) {
+                setTermekek(data);
+            } else {
+                setTermekek(prev => [...prev, ...data]);
+            }
+        } catch (err) {
             setHasMore(false);
-            return;
+        } finally {
+            setLoading(false);
+            setLoadingMore(false);
         }
+    };
 
-        if (data.length === 0) {
-            setHasMore(false);
-            return;
-        }
-
-        if (nextPage === 0) {
-            setTermekek(data);
-        } else {
-            setTermekek(prev => [...prev, ...data]);
-        }
-
-    } catch (err) {
-        console.error("Betöltési hiba:", err);
-    } finally {
-        setLoading(false);
-        setLoadingMore(false);
-    }
-};
-
-    // ------------ ELSŐ BETÖLTÉS --------------
-    useEffect(() => {
-        setLoading(true);
-        loadProducts(1);
-    }, []);
-
-    // ------------ KATEGÓRIA/FILTER VÁLTÁSKOR ÚJRA TÖLTÜNK --------------
+    // Első betöltés vagy keresés váltás
     useEffect(() => {
         setLoading(true);
         setPage(1);
         setHasMore(true);
-        loadProducts(1);
-    }, [
-    selectedCategory,
-    filters?.brand,
-    filters?.size,
-    filters?.color,
-    filters?.price
-]);
-    // ------------ GÖRGETÉS LISTENER --------------
+        loadProducts(1, searchQuery);
+    }, [selectedCategory, filters?.brand, filters?.size, filters?.color, filters?.price, searchQuery]);
+
+    // Infinite scroll
     useEffect(() => {
         const handleScroll = () => {
             if (!hasMore || loadingMore) return;
-
-            if (
-                window.innerHeight + window.scrollY >=
-                document.body.offsetHeight - 500
-            ) {
+            if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 500) {
                 setLoadingMore(true);
                 setPage(prev => prev + 1);
             }
         };
-
         window.addEventListener("scroll", handleScroll);
         return () => window.removeEventListener("scroll", handleScroll);
     }, [hasMore, loadingMore]);
 
-    // ------------ LAP VÁLTOZÁSAKOR TÖLTÜNK --------------
     useEffect(() => {
-        if (page > 1) loadProducts(page);
-    }, [page]);
+        if (page > 1) loadProducts(page, searchQuery);
+    }, [page, searchQuery]);
 
     // ---------------- SZŰRÉS (mint eddig) ------------------
     const filteredProducts = termekek

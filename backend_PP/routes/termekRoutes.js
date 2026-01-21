@@ -33,11 +33,6 @@ router.get('/', function(req, res, next) {
     termekController.getAll(req, res);
 });
 
-// Termék ID szerint
-router.get('/:id', function(req, res, next) {
-    termekController.getById(req, res);
-});
-
 // Új termék
 router.post('/', function(req, res, next) {
     termekController.create(req, res);
@@ -53,17 +48,27 @@ router.delete('/:id', function(req, res, next) {
     termekController.deleteById(req, res);
 });
 
-// Keresés név szerint
-router.get('/nev/:nev', function(req, res, next) {
-    termekController.getByNev(req, res);
+// KERESÉS név vagy márka alapján, lapozással
+router.get('/search', async (req, res) => {
+    const q = req.query.q ? req.query.q.trim().toLowerCase() : "";
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 16;
+    const offset = (page - 1) * limit;
+
+    if (!q) return res.json([]);
+
+    try {
+        // Keresés név vagy márka alapján
+        const [rows] = await pool.query(
+            `SELECT * FROM view1 WHERE LOWER(Név) LIKE ? OR LOWER(Márka) LIKE ? LIMIT ? OFFSET ?`,
+            [`%${q}%`, `%${q}%`, limit, offset]
+        );
+        res.json(rows);
+    } catch (err) {
+        console.error("Keresés hiba:", err);
+        res.status(500).json({ error: "Hiba a keresés során" });
+    }
 });
-
-// Szűrés típus szerint
-router.get('/tipus/:tipus', function(req, res, next) {
-    termekController.getByTipus(req, res);
-});
-
-
 
 // DINAMIKUS SZŰRÉS
 router.post("/filter", async (req, res) => {
@@ -109,7 +114,18 @@ router.get("/paged", async (req, res) => {
     }
 });
 
-
-
+// Dinamikus route-ok a legvégére!
+// Termék ID szerint
+router.get('/:id', function(req, res, next) {
+    termekController.getById(req, res);
+});
+// Keresés név szerint
+router.get('/nev/:nev', function(req, res, next) {
+    termekController.getByNev(req, res);
+});
+// Szűrés típus szerint
+router.get('/tipus/:tipus', function(req, res, next) {
+    termekController.getByTipus(req, res);
+});
 
 module.exports = router;

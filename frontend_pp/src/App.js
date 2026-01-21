@@ -18,7 +18,7 @@ import SearchBar from "./components/SearchBar"; // SearchBar import
 function App() {
     const [user, setUser] = useState(null);
     const [showRegister, setShowRegister] = useState(false);
-    const [searchResults, setSearchResults] = useState([]); // SearchBar találatok tárolása
+    const [searchQuery, setSearchQuery] = useState(""); // keresési szöveg
 
     // 🔥 KATEGÓRIA
     const [selectedCategory, setSelectedCategory] = useState("ALL");
@@ -75,7 +75,7 @@ function App() {
                         </div>
                     ) : (
                         <>
-                            <Menu onCategoryChange={setSelectedCategory} onSearch={setSearchResults} />
+                            <Menu onCategoryChange={setSelectedCategory} onSearch={setSearchQuery} />
                             {/* Globális gombok/elemek */}
                             <div className="container d-flex justify-content-between align-items-center mt-3">
                                 <button
@@ -99,12 +99,12 @@ function App() {
                                             <Filter onFilterChange={handleFilterChange} />
                                         </div>
                                         <div className="container mt-4">
-                                            <SearchBar onResults={setSearchResults} />
+                                            <SearchBar onQuery={setSearchQuery} />
                                         </div>
                                         <TermekLista
                                             selectedCategory={selectedCategory}
                                             filters={filters}
-                                            searchQuery={searchResults}
+                                            searchQuery={searchQuery}
                                             userId={userId}
                                         />
                                     </>
