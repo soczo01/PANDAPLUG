@@ -69,7 +69,7 @@ export async function register(username, password, email) {
 
 // Profil lekérdezése (védett végpont)
 export function getProfile() {
-  return apiFetch("/profile");
+  return apiFetch("/auth/profile");
 }
 
 // Kijelentkezés (csak frontend)

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { login } from "../api";
 import { jwtDecode } from "jwt-decode";
+import "../App.css";
 
 function LoginForm({ onLogin, onSwitchToRegister }) {
     const [user, setUser] = useState("");
@@ -18,7 +19,7 @@ function LoginForm({ onLogin, onSwitchToRegister }) {
         const decoded = jwtDecode(data.accessToken);  // <--- itt változott
         onLogin({ 
             username: decoded.username, 
-            role: decoded.jogosultsag   // <--- backend JWT mezője
+            role: decoded.szerep   // <--- backend JWT mezője
         });
     } catch (err) {
         setError("Hibás felhasználónév vagy jelszó");
@@ -29,40 +30,37 @@ function LoginForm({ onLogin, onSwitchToRegister }) {
 
 
     return (
-        <div>
-            <h1>Bejelentkezés</h1>
-
-            <form onSubmit={handleSubmit}>
-                <div>
+        <div className="auth-container">
+            <h2 className="auth-title">Bejelentkezés</h2>
+            <form onSubmit={handleSubmit} className="auth-form">
+                <div className="auth-form-group">
                     <label>Felhasználónév:</label>
                     <input
                         type="text"
                         value={user}
                         onChange={(e) => setUser(e.target.value)}
                         required
+                        className="auth-input"
                     />
                 </div>
-
-                <div>
+                <div className="auth-form-group">
                     <label>Jelszó:</label>
                     <input
                         type="password"
                         value={pwd}
                         onChange={(e) => setPwd(e.target.value)}
                         required
+                        className="auth-input"
                     />
                 </div>
-
-                <button type="submit" disabled={loading}>
-                    Bejelentkezés
+                <button type="submit" className="auth-btn" disabled={loading}>
+                    {loading ? "Belépés..." : "Bejelentkezés"}
                 </button>
             </form>
-
-            {error && <p style={{ color: "red" }}>{error}</p>}
-
-            <p>
-                Nincs még fiókod?{" "}
-                <button onClick={onSwitchToRegister}>Regisztráció</button>
+            {error && <p className="auth-error">{error}</p>}
+            <p className="auth-switch">
+                Nincs még fiókod?{' '}
+                <button type="button" className="auth-link" onClick={onSwitchToRegister}>Regisztráció</button>
             </p>
         </div>
     );

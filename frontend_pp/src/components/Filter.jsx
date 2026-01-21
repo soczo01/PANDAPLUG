@@ -33,9 +33,9 @@ export default function Filter({ onFilterChange }) {
         <NavDropdown title="Filter" id="filter-dropdown" className="text-white">
 
             {/* ---- MÁRKA --- */}
-            <NavDropdown.Header>Márka</NavDropdown.Header>
+            <NavDropdown.Header >Márka</NavDropdown.Header>
 
-            <NavDropdown.Item onClick={() => onFilterChange({ brand: "ALL" })}>
+            <NavDropdown.Item style={{ color: '#fff', fontWeight: 500 }}  onClick={() => onFilterChange({ brand: "ALL" })}>
                 Összes
             </NavDropdown.Item>
 
@@ -43,6 +43,7 @@ export default function Filter({ onFilterChange }) {
                 <NavDropdown.Item
                     key={b.markanev}
                     onClick={() => onFilterChange({ brand: b.markanev })}
+                    style={{ color: '#fff', fontWeight: 500 }}
                 >
                     {b.markanev}
                 </NavDropdown.Item>
@@ -53,7 +54,7 @@ export default function Filter({ onFilterChange }) {
             {/* ---- MÉRET ---- */}
             <NavDropdown.Header>Méret</NavDropdown.Header>
 
-            <NavDropdown.Item onClick={() => onFilterChange({ size: "ALL" })}>
+            <NavDropdown.Item style={{ color: '#fff', fontWeight: 500 }} onClick={() => onFilterChange({ size: "ALL" })}>
                 Összes
             </NavDropdown.Item>
 
@@ -61,6 +62,7 @@ export default function Filter({ onFilterChange }) {
                 <NavDropdown.Item
                     key={s.meretnev}
                     onClick={() => onFilterChange({ size: s.meretnev })}
+                    style={{ color: '#fff', fontWeight: 500 }}
                 >
                     {s.meretnev}
                 </NavDropdown.Item>
@@ -71,7 +73,7 @@ export default function Filter({ onFilterChange }) {
             {/* ---- SZÍN ---- */}
             <NavDropdown.Header>Szín</NavDropdown.Header>
 
-            <NavDropdown.Item onClick={() => onFilterChange({ color: "ALL" })}>
+            <NavDropdown.Item style={{ color: '#fff', fontWeight: 500 }} onClick={() => onFilterChange({ color: "ALL" })}>
                 Összes
             </NavDropdown.Item>
 
@@ -79,6 +81,7 @@ export default function Filter({ onFilterChange }) {
                 <NavDropdown.Item
                     key={c.szinnev}
                     onClick={() => onFilterChange({ color: c.szinnev })}
+                    style={{ color: '#fff', fontWeight: 500 }}
                 >
                     {c.szinnev}
                 </NavDropdown.Item>
@@ -88,11 +91,11 @@ export default function Filter({ onFilterChange }) {
 
             {/* ---- ÁR ---- */}
             <NavDropdown.Header>Ár</NavDropdown.Header>
-            <NavDropdown.Item onClick={() => onFilterChange({ price: "ASC" })}>
+            <NavDropdown.Item style={{ color: '#fff', fontWeight: 500 }} onClick={() => onFilterChange({ price: "ASC" })}>
                 Ár: alacsony → magas
             </NavDropdown.Item>
 
-            <NavDropdown.Item onClick={() => onFilterChange({ price: "DESC" })}>
+            <NavDropdown.Item style={{ color: '#fff', fontWeight: 500 }} onClick={() => onFilterChange({ price: "DESC" })}>
                 Ár: magas → alacsony
             </NavDropdown.Item>
         </NavDropdown>

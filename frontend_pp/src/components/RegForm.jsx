@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { register } from "../api";
+import "../App.css";
 
 export default function RegForm({ onSwitchToLogin }) {
     const [message, setMessage] = useState(null);
@@ -42,11 +43,10 @@ export default function RegForm({ onSwitchToLogin }) {
     };
 
     return (
-        <div>
-            <h2>Regisztráció</h2>
-
-            <form onSubmit={handleSubmit}>
-                <div>
+        <div className="auth-container">
+            <h2 className="auth-title">Regisztráció</h2>
+            <form onSubmit={handleSubmit} className="auth-form">
+                <div className="auth-form-group">
                     <label>Felhasználónév:</label>
                     <input
                         type="text"
@@ -54,10 +54,10 @@ export default function RegForm({ onSwitchToLogin }) {
                         value={userdata.username}
                         onChange={handleChange}
                         required
+                        className="auth-input"
                     />
                 </div>
-
-                <div>
+                <div className="auth-form-group">
                     <label>Email:</label>
                     <input
                         type="email"
@@ -65,10 +65,10 @@ export default function RegForm({ onSwitchToLogin }) {
                         value={userdata.email}
                         onChange={handleChange}
                         required
+                        className="auth-input"
                     />
                 </div>
-
-                <div>
+                <div className="auth-form-group">
                     <label>Jelszó:</label>
                     <input
                         type="password"
@@ -76,18 +76,26 @@ export default function RegForm({ onSwitchToLogin }) {
                         value={userdata.password}
                         onChange={handleChange}
                         required
+                        className="auth-input"
                     />
                 </div>
-
-                <button type="submit">Regisztráció</button>
+                <button type="submit" className="auth-btn">
+                    Regisztráció
+                </button>
             </form>
 
-            {message && <p style={{ color: "green" }}>{message}</p>}
-            {error && <p style={{ color: "red" }}>{error}</p>}
+            {message && <p className="auth-success">{message}</p>}
+            {error && <p className="auth-error">{error}</p>}
 
-            <p>
+            <p className="auth-switch">
                 Már van fiókod?{" "}
-                <button onClick={onSwitchToLogin}>Bejelentkezés</button>
+                <button
+                    type="button"
+                    className="auth-link"
+                    onClick={onSwitchToLogin}
+                >
+                    Bejelentkezés
+                </button>
             </p>
         </div>
     );

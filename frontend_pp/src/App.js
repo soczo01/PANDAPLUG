@@ -1,60 +1,126 @@
-
 import "./App.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import Menu from "./components/Menu";
 import Kosar from "./components/Kosar";
 import Filter from "./components/Filter";
 import TermekLista from "./components/TermekLista";
+import CheckoutPage from "./components/CheckoutPage"; // Új import
 import { CartProvider } from "./context/CartContext";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import LoginForm from "./components/LoginForm";
 import RegForm from "./components/RegForm";
 import { jwtDecode } from "jwt-decode";
 import { getToken, logout } from "./api";
+// 🔥 Router importok
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import SearchBar from "./components/SearchBar"; // SearchBar import
 
 function App() {
     const [user, setUser] = useState(null);
     const [showRegister, setShowRegister] = useState(false);
+    const [searchResults, setSearchResults] = useState([]); // SearchBar találatok tárolása
+
+    // 🔥 KATEGÓRIA
+    const [selectedCategory, setSelectedCategory] = useState("ALL");
+
+    // 🔥 FILTEREK
+    const [filters, setFilters] = useState({
+        size: "ALL",
+        color: "ALL",
+        brand: "ALL",
+        price: "ALL",
+    });
+
+    const handleFilterChange = (newFilter) => {
+        setFilters((prev) => ({
+            ...prev,
+            ...newFilter,
+        }));
+    };
+
+    const [userId, setUserId] = useState(null);
 
     useEffect(() => {
         const token = getToken();
         if (token) {
-            const decoded = jwtDecode(token);
-            setUser({ username: decoded.username, role: decoded.role });
+            try {
+                const decoded = jwtDecode(token);
+                setUser({ username: decoded.username, role: decoded.role });
+                setUserId(decoded.id); // user_id helyett id a JWT-ből
+            } catch (e) {
+                console.error("Hibás token");
+            }
         }
     }, []);
 
+    const kosarRef = useRef();
+
     return (
-        <CartProvider>
-            {!user ? (
-                <div className="container mt-5 d-flex justify-content-center">
-                    {showRegister ? (
-                        <RegForm onSwitchToLogin={() => setShowRegister(false)} />
+        <Router>
+            <CartProvider>
+                <div className="App">
+                    {/* Hero Header */}
+                    <div className="hero-header"></div>
+
+                    {!user ? (
+                        <div className="container mt-5 d-flex justify-content-center">
+                            {showRegister ? (
+                                <RegForm onSwitchToLogin={() => setShowRegister(false)} />
+                            ) : (
+                                <LoginForm
+                                    onLogin={setUser}
+                                    onSwitchToRegister={() => setShowRegister(true)}
+                                />
+                            )}
+                        </div>
                     ) : (
-                        <LoginForm
-                            onLogin={setUser}
-                            onSwitchToRegister={() => setShowRegister(true)}
-                        />
+                        <>
+                            <Menu onCategoryChange={setSelectedCategory} onSearch={setSearchResults} />
+                            {/* Globális gombok/elemek */}
+                            <div className="container d-flex justify-content-between align-items-center mt-3">
+                                <button
+                                    className="btn btn-secondary"
+                                    onClick={() => {
+                                        logout();
+                                        setUser(null);
+                                        setUserId(null);
+                                    }}
+                                >
+                                    Kijelentkezés
+                                </button>
+                                <Kosar />
+                            </div>
+
+                            <Routes>
+                                {/* FŐOLDAL: Szűrő + SearchBar + Terméklista */}
+                                <Route path="/" element={
+                                    <>
+                                        <div className="container mt-4">
+                                            <Filter onFilterChange={handleFilterChange} />
+                                        </div>
+                                        <div className="container mt-4">
+                                            <SearchBar onResults={setSearchResults} />
+                                        </div>
+                                        <TermekLista
+                                            selectedCategory={selectedCategory}
+                                            filters={filters}
+                                            searchQuery={searchResults}
+                                            userId={userId}
+                                        />
+                                    </>
+                                } />
+
+                                {/* PÉNZTÁR OLDAL */}
+                                <Route path="/checkout" element={<CheckoutPage />} />
+
+                                {/* Ha nem létező oldalra megy, vissza a főoldalra */}
+                                <Route path="*" element={<Navigate to="/" />} />
+                            </Routes>
+                        </>
                     )}
                 </div>
-            ) : (
-                <>
-                    <Menu />
-                    <Kosar />
-                    <button
-                        className="btn btn-secondary"
-                        onClick={() => {
-                            logout();
-                            setUser(null);
-                        }}
-                    >
-                        Kijelentkezés
-                    </button>
-                    <Filter />
-                    <TermekLista />
-                </>
-            )}
-        </CartProvider>
+            </CartProvider>
+        </Router>
     );
 }
 

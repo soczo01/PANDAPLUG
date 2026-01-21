@@ -42,45 +42,38 @@ exports.register = async (req, res, next) => {
 };
 
 //2. bejelentkezés
+// felhasznaloController.js - LOGIN JAVÍTÁSA
 exports.login = async (req, res, next) => {
   try {
-    const { email, jelszo } = req.body;
+    // A React-től érkező 'user' (felhasználónév) és 'pwd' (jelszó) változókat fogadjuk
+    // MEGJEGYZÉS: Ha a React kódban 'user'-nek nevezted el a mezőt, a backend-nek azt kell várnia
+    const { username, jelszo } = req.body; 
 
-    // Felhasználó lekérése
-    const user = await Felhasznalo.findByEmail(email);
+    // A Modellben 'findByUsername' van, nem 'findByEmail'!
+    const user = await Felhasznalo.findByUsername(username);
+    
     if (!user) {
-      return res.status(400).json({ message: "Hibás email vagy jelszó." });
+      return res.status(400).json({ message: "Hibás felhasználónév vagy jelszó." });
     }
 
-    // Jelszó ellenőrzés
-    const isMatch = await bcrypt.compare(jelszo, user.jelszo);
+    // Jelszó ellenőrzés (az adatbázisban 'password' az oszlop neve a képed alapján!)
+    const isMatch = await bcrypt.compare(jelszo, user.password);
     if (!isMatch) {
-      return res.status(400).json({ message: "Hibás email vagy jelszó." });
+      return res.status(400).json({ message: "Hibás felhasználónév vagy jelszó." });
     }
 
-    // Access token (rövid élettartamú)
+    // Access token generálása
+    // Fontos: a mezőnevek (id, username, role) egyezzenek az adatbázissal!
     const accessToken = jwt.sign(
-      { id: user.id, nev: user.nev, email: user.email, szerep: user.szerep },
+      { 
+        id: user.id, 
+        username: user.username, 
+        szerep: user.role // A képeden 'role' az oszlop neve
+      },
       process.env.JWT_SECRET,
-      { expiresIn: process.env.JWT_EXPIRES_IN } // pl. 1h
+      { expiresIn: '1h' }
     );
 
-    // Refresh token (hosszú élettartamú JWT)
-    const refreshToken = jwt.sign(
-      { id: user.id, email: user.email },
-      process.env.REFRESH_JWT_SECRET,
-      { expiresIn: process.env.REFRESH_EXPIRES_IN } // pl. 7d
-    );
-
-    // Refresh token HTTP-only cookie-ban
-    res.cookie("refreshToken", refreshToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production", // HTTPS élesben
-      sameSite: "Strict",
-      maxAge: 7 * 24 * 60 * 60 * 1000 // 7 nap (összhangban a JWT lejárattal)
-    });
-
-    // Visszaküldjük az access tokent JSON-ben
     res.json({
       message: "Sikeres bejelentkezés!",
       accessToken

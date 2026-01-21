@@ -3,41 +3,85 @@ import { useCart } from "../context/CartContext";
 import { FaShoppingCart } from "react-icons/fa";
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
+import { useNavigate } from "react-router-dom";
+import { getProfile } from "../api";
 
 export default function Kosar() {
     const { cart, setCart } = useCart();
     const [show, setShow] = useState(false);
+    const [userId, setUserId] = useState(null);
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        getProfile().then(profile => {
+            setUserId(profile.user?.id); // a backend user objektumot ad vissza, id mezővel
+            fetch(`http://localhost:8080/api/cart/${profile.user?.id}`)
+                .then(res => res.json())
+                .then(data => setCart(data));
+        });
+    }, [setCart]);
 
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
 
-    // Kosár friss lekérése
-    useEffect(() => {
-        fetch("http://localhost:8080/api/cart/1")
-            .then(res => res.json())
-            .then(data => setCart(data));
-    }, [setCart]);
+    const handleCheckout = () => {
+        handleClose();
+        navigate("/checkout");
+    };
 
     const removeItem = (itemId) => {
-        fetch(`http://localhost:8080/api/cart/remove/${itemId}`, {
+        if (!userId) return;
+        fetch(`http://localhost:8080/api/cart/remove/${itemId}?user_id=${userId}`, {
             method: "DELETE"
         })
         .then(() =>
-            fetch("http://localhost:8080/api/cart/1")
+            fetch(`http://localhost:8080/api/cart/${userId}`)
                 .then(res => res.json())
                 .then(cartData => setCart(cartData))
         );
     };
 
     const clearCart = () => {
-        fetch("http://localhost:8080/api/cart/clear/1", {
+        if (!userId) return;
+        fetch(`http://localhost:8080/api/cart/clear/${userId}`, {
             method: "DELETE"
         })
         .then(() => setCart([]));
     };
 
-    // Összesített ár számítása
     const total = cart.reduce((sum, item) => sum + Number(item["Ár(usd)"] || 0), 0);
+
+    const handleAddToCart = (termek_id) => {
+        if (!userId) {
+            console.error('Nincs userId, nem lehet kosárba rakni!');
+            return;
+        }
+        fetch("http://localhost:8080/api/cart/add", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                user_id: userId,
+                termek_id,
+                mennyiseg: 1,
+            }),
+        })
+            .then(async res => {
+                if (!res.ok) {
+                    const err = await res.text();
+                    console.error('Kosárba rakás hiba:', err);
+                    return;
+                }
+                return res.json();
+            })
+            .then(() => {
+                fetch(`http://localhost:8080/api/cart/${userId}`)
+                    .then(res => res.json())
+                    .then(cartData => setCart(cartData));
+            })
+            .catch(err => {
+                console.error('Kosárba rakás fetch hiba:', err);
+            });
+    };
 
     if (!Array.isArray(cart)) {
         return <div style={{color:'red'}}>Hiba: a kosár tartalma nem tömb!</div>;
@@ -71,10 +115,7 @@ export default function Kosar() {
                                         <div className="cart-modal-details">
                                             <h2 className="cart-modal-title2">{item.Név}</h2>
                                             <p className="cart-modal-price">${item["Ár(usd)"]}</p>
-                                            <p><strong>Márka:</strong> {item["Márka"]}</p>
-                                            <p><strong>Szín:</strong> {item["Szín"]}</p>
                                             <p><strong>Méret:</strong> {item["Méret"]}</p>
-                                            <p><strong>Státusz:</strong> {item["Státusz"]}</p>
                                             <Button size="sm" variant="danger" className="cart-modal-remove" onClick={() => removeItem(item.item_id)}>Törlés</Button>
                                         </div>
                                     </div>
@@ -84,7 +125,14 @@ export default function Kosar() {
                                         <span>Összesen:</span>
                                         <span className="cart-modal-total">${total.toFixed(2)}</span>
                                     </div>
-                                    <Button className="cart-modal-order-btn" variant="success" block>➔ Tovább a megrendeléshez</Button>
+                                    <Button 
+                                        className="cart-modal-order-btn" 
+                                        variant="success" 
+                                        onClick={handleCheckout}
+                                        style={{ width: '100%', marginTop: '10px' }}
+                                    >
+                                        ➔ Tovább a megrendeléshez
+                                    </Button>
                                 </div>
                             </>
                         )}
