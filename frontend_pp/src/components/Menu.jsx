@@ -10,7 +10,15 @@ function Menu({ onCategoryChange, onFilterChange, onSearch }) {
     <Navbar bg="dark" data-bs-theme="dark" expand="lg">
       <Container>
         {/* FŐOLDAL */}
-        <Navbar.Brand onClick={() => onCategoryChange("ALL")}>Pandaplug</Navbar.Brand>
+        <Navbar.Brand
+          style={{ cursor: "pointer" }}
+          onClick={() => {
+            onCategoryChange("ALL");
+            if (typeof onSearch === "function") onSearch(""); // kereső mező ürítése
+          }}
+        >
+          Pandaplug
+        </Navbar.Brand>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
           {/* KATEGÓRIÁK */}
