@@ -14,9 +14,11 @@ import { getToken, logout } from "./api";
 // 🔥 Router importok
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import SearchBar from "./components/SearchBar"; // SearchBar import
+import AdminTermekLista from "./components/admin/AdminTermekLista";
 
 function App() {
     const [user, setUser] = useState(null);
+    const [userId, setUserId] = useState(null);
     const [showRegister, setShowRegister] = useState(false);
     const [searchQuery, setSearchQuery] = useState(""); // keresési szöveg
 
@@ -38,15 +40,15 @@ function App() {
         }));
     };
 
-    const [userId, setUserId] = useState(null);
-
     useEffect(() => {
         const token = getToken();
         if (token) {
             try {
                 const decoded = jwtDecode(token);
                 setUser({ username: decoded.username, role: decoded.role });
-                setUserId(decoded.id); // user_id helyett id a JWT-ből
+                // Bármilyen user id mező (user_id, sub, id) támogatása
+                const userId = decoded.user_id || decoded.sub || decoded.id;
+                setUserId(userId);
             } catch (e) {
                 console.error("Hibás token");
             }
@@ -61,21 +63,28 @@ function App() {
                 <div className="App">
                     {/* Hero Header */}
                     <div className="hero-header"></div>
-
                     {!user ? (
                         <div className="container mt-5 d-flex justify-content-center">
                             {showRegister ? (
                                 <RegForm onSwitchToLogin={() => setShowRegister(false)} />
                             ) : (
                                 <LoginForm
-                                    onLogin={setUser}
+                                    onLogin={(userObj, userId) => {
+                                        setUser(userObj);
+                                        setUserId(userId);
+                                    }}
                                     onSwitchToRegister={() => setShowRegister(true)}
                                 />
                             )}
                         </div>
                     ) : (
                         <>
-                            <Menu onCategoryChange={setSelectedCategory} onSearch={setSearchQuery} />
+                            {user?.role === "admin" && (
+                                <div style={{background:'#23272f',color:'#ffb347',fontWeight:'bold',fontSize:'1.3rem',borderRadius:10,padding:'10px 0',textAlign:'center',margin:'20px 0',letterSpacing:1}}>
+                                    ADMIN FELÜLET
+                                </div>
+                            )}
+                            <Menu onCategoryChange={setSelectedCategory} onSearch={setSearchQuery} user={user} />
                             {/* Globális gombok/elemek */}
                             <div className="container d-flex justify-content-between align-items-center mt-3">
                                 <button
@@ -92,6 +101,10 @@ function App() {
                             </div>
 
                             <Routes>
+                                {/* ADMIN TERMÉKLISTA OLDAL */}
+                                {user?.role === "admin" && (
+                                    <Route path="/admin/termekek" element={<AdminTermekLista user={user} />} />
+                                )}
                                 {/* FŐOLDAL: Szűrő + SearchBar + Terméklista */}
                                 <Route path="/" element={
                                     <>

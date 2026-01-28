@@ -10,23 +10,23 @@ function LoginForm({ onLogin, onSwitchToRegister }) {
     const [loading, setLoading] = useState(false);
 
     const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError(null);
-    setLoading(true);
+        e.preventDefault();
+        setError(null);
+        setLoading(true);
 
-    try {
-        const data = await login(user, pwd);
-        const decoded = jwtDecode(data.accessToken);  // <--- itt változott
-        onLogin({ 
-            username: decoded.username, 
-            role: decoded.szerep   // <--- backend JWT mezője
-        });
-    } catch (err) {
-        setError("Hibás felhasználónév vagy jelszó");
-    } finally {
-        setLoading(false);
-    }
-};
+        try {
+            const data = await login(user, pwd);
+            const decoded = jwtDecode(data.accessToken);
+            onLogin(
+                { username: decoded.username, role: decoded.szerep || decoded.role },
+                decoded.user_id || decoded.sub
+            );
+        } catch (err) {
+            setError("Hibás felhasználónév vagy jelszó");
+        } finally {
+            setLoading(false);
+        }
+    };
 
 
     return (

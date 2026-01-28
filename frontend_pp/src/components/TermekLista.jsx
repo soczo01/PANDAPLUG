@@ -97,18 +97,19 @@ export default function TermekLista({ selectedCategory, filters, searchQuery, us
 
     // ------------ KOSÁRBA --------------
     const handleAddToCart = (termek_id) => {
+
         fetch("http://localhost:8080/api/cart/add", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
-                user_id: 1,
+                user_id: userId,
                 termek_id,
                 mennyiseg: 1,
             }),
         })
             .then(res => res.json())
             .then(() => {
-                fetch("http://localhost:8080/api/cart/1")
+                fetch(`http://localhost:8080/api/cart/${userId}`)
                     .then(res => res.json())
                     .then(cartData => setCart(cartData));
             });
@@ -127,13 +128,11 @@ export default function TermekLista({ selectedCategory, filters, searchQuery, us
 
             {/* Részletes nézet */}
             <Details
-    product={selectedProduct}
-    onClose={() => setSelectedProduct(null)}
-    onAddToCart={handleAddToCart}
-    onSelectProduct={(p) => setSelectedProduct(p)}
-/>
-
-
+                product={selectedProduct}
+                onClose={() => setSelectedProduct(null)}
+                onAddToCart={handleAddToCart}
+                onSelectProduct={(p) => setSelectedProduct(p)}
+            />
 
             <h1 className="mb-4 text-center">Termékek</h1>
 

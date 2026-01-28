@@ -3,6 +3,23 @@ var express = require('express');
 var router = express.Router();
 var termekController = require('../controllers/termekController');
 const Termek = require("../models/termekModel");
+const isAdmin = require('../middlewares/isAdmin');
+const authenticateToken = require('../middlewares/authenticateToken'); // ha van ilyen middleware
+
+// ADMIN ONLY: Új termék létrehozása
+router.post('/admin', authenticateToken, isAdmin, (req, res) => {
+    termekController.create(req, res);
+});
+
+// ADMIN ONLY: Termék törlése
+router.delete('/admin/:id', authenticateToken, isAdmin, (req, res) => {
+    termekController.deleteById(req, res);
+});
+
+// ADMIN ONLY: Termék szerkesztése
+router.put('/admin/:id', authenticateToken, isAdmin, (req, res) => {
+    termekController.updateById(req, res);
+});
 
 // LAPOZÁS – /api/termekek/paged?page=1&limit=24
 router.get("/paged", async (req, res) => {

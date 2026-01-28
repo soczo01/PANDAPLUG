@@ -4,8 +4,9 @@ import Nav from "react-bootstrap/Nav";
 import Navbar from "react-bootstrap/Navbar";
 import NavDropdown from "react-bootstrap/NavDropdown";
 import SearchBar from "./SearchBar";
+import { Link } from "react-router-dom";
 
-function Menu({ onCategoryChange, onFilterChange, onSearch }) {
+function Menu({ onCategoryChange, onFilterChange, onSearch, user }) {
   return (
     <Navbar bg="dark" data-bs-theme="dark" expand="lg">
       <Container>
@@ -27,6 +28,12 @@ function Menu({ onCategoryChange, onFilterChange, onSearch }) {
             <Nav.Link onClick={() => onCategoryChange("hoodies")}>Hoodies</Nav.Link>
             <Nav.Link onClick={() => onCategoryChange("pants")}>Pants</Nav.Link>
             <Nav.Link onClick={() => onCategoryChange("shorts")}>Shorts</Nav.Link>
+            {/* Admin link csak adminnak */}
+            {user?.role === "admin" && (
+              <Nav.Link as={Link} to="/admin/termekek">
+                Admin terméklista
+              </Nav.Link>
+            )}
           </Nav>
           {/* Kereső a navbar jobb oldalán */}
         </Navbar.Collapse>
