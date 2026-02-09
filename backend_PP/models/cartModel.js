@@ -2,7 +2,8 @@ const pool = require('../config/db');
 
 const Cart = {};
 
-Cart.getCart = async (user_id) => {
+Cart.getCart = async (
+    user_id) => {
     const [rows] = await pool.query(
         `SELECT 
             cart_items.id AS item_id,

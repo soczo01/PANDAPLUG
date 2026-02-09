@@ -97,7 +97,7 @@ function App() {
                                 >
                                     Kijelentkezés
                                 </button>
-                                <Kosar />
+                                <Kosar userId={userId} />
                             </div>
 
                             <Routes>

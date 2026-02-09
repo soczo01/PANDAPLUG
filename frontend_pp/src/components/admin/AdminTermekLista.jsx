@@ -1,45 +1,86 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Button from "react-bootstrap/Button";
 import Table from "react-bootstrap/Table";
 import Modal from "react-bootstrap/Modal";
 import Form from "react-bootstrap/Form";
 
+const LIMIT = 16;
+
 export default function AdminTermekLista({ user }) {
     const [termekek, setTermekek] = useState([]);
-    const [loading, setLoading] = useState(true);
+    const [page, setPage] = useState(1);
+    const [hasMore, setHasMore] = useState(true);
+    const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
-    const [editProduct, setEditProduct] = useState(null); // szerkesztett termék
+
+    const [editProduct, setEditProduct] = useState(null);
     const [saving, setSaving] = useState(false);
 
-    // Termékek betöltése
+    const observerRef = useRef(null);
+
+    const loadMore = async () => {
+        if (loading || !hasMore) return;
+
+        setLoading(true);
+        try {
+            const res = await fetch(
+                `/api/termekek/paged?page=${page}&limit=${LIMIT}`
+            );
+            if (!res.ok) throw new Error();
+
+            const data = await res.json();
+
+            setTermekek(prev => [...prev, ...data]);
+            setHasMore(data.length === LIMIT);
+            setPage(prev => prev + 1);
+        } catch {
+            setError("Nem sikerült betölteni a termékeket!");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    // első betöltés
     useEffect(() => {
-        fetch("/api/termekek/paged?page=1&limit=1000")
-            .then(res => res.json())
-            .then(data => setTermekek(data))
-            .catch(() => setError("Nem sikerült betölteni a termékeket!"))
-            .finally(() => setLoading(false));
+        loadMore();
+        // eslint-disable-next-line
     }, []);
 
-    // Termék törlése
+    // infinite scroll observer
+    useEffect(() => {
+        if (!observerRef.current) return;
+
+        const observer = new IntersectionObserver(entries => {
+            if (entries[0].isIntersecting) {
+                loadMore();
+            }
+        });
+
+        observer.observe(observerRef.current);
+
+        return () => observer.disconnect();
+        // eslint-disable-next-line
+    }, [observerRef.current, hasMore, loading]);
+
+    // törlés
     const handleDelete = async (id) => {
         if (!window.confirm("Biztosan törlöd ezt a terméket?")) return;
         try {
             const token = localStorage.getItem("token");
             const res = await fetch(`/api/termekek/admin/${id}`, {
                 method: "DELETE",
-                headers: { "Authorization": `Bearer ${token}` }
+                headers: { Authorization: `Bearer ${token}` }
             });
-            if (!res.ok) throw new Error("Törlés sikertelen");
-            setTermekek(termekek.filter(t => t.termek_id !== id));
-        } catch (err) {
+            if (!res.ok) throw new Error();
+
+            setTermekek(prev => prev.filter(t => t.termek_id !== id));
+        } catch {
             alert("Hiba a törlés során!");
         }
     };
 
-    // Termék szerkesztése
-    const handleEdit = (termek) => {
-        setEditProduct({ ...termek });
-    };
+    // szerkesztés
+    const handleEdit = (termek) => setEditProduct({ ...termek });
 
     const handleEditChange = (e) => {
         const { name, value } = e.target;
@@ -50,31 +91,38 @@ export default function AdminTermekLista({ user }) {
         setSaving(true);
         try {
             const token = localStorage.getItem("token");
-            const res = await fetch(`/api/termekek/admin/${editProduct.termek_id}`, {
-                method: "PUT",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": `Bearer ${token}`
-                },
-                body: JSON.stringify(editProduct)
-            });
-            if (!res.ok) throw new Error("Szerkesztés sikertelen");
-            // Frissítsük a listát helyben
-            setTermekek(termekek.map(t => t.termek_id === editProduct.termek_id ? editProduct : t));
+            const res = await fetch(
+                `/api/termekek/admin/${editProduct.termek_id}`,
+                {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${token}`
+                    },
+                    body: JSON.stringify(editProduct)
+                }
+            );
+            if (!res.ok) throw new Error();
+
+            setTermekek(prev =>
+                prev.map(t =>
+                    t.termek_id === editProduct.termek_id ? editProduct : t
+                )
+            );
             setEditProduct(null);
-        } catch (err) {
+        } catch {
             alert("Hiba a szerkesztés során!");
         } finally {
             setSaving(false);
         }
     };
 
-    if (loading) return <div className="text-center mt-5">Betöltés...</div>;
     if (error) return <div className="text-danger text-center mt-5">{error}</div>;
 
     return (
         <div className="container mt-4">
             <h2 className="mb-4">Admin terméklista</h2>
+
             <Table striped bordered hover responsive>
                 <thead>
                     <tr>
@@ -97,12 +145,26 @@ export default function AdminTermekLista({ user }) {
                             <td>{t["Ár(usd)"]}</td>
                             <td>{t["Méret"]}</td>
                             <td>{t["Típus"]}</td>
-                            <td><img src={`/images/${t.kep_id}.png`} alt="kep" style={{width:60}} /></td>
                             <td>
-                                <Button variant="danger" size="sm" onClick={() => handleDelete(t.termek_id)}>
+                                <img
+                                    src={`/images/${t.kep_id}.png`}
+                                    alt="kep"
+                                    style={{ width: 60 }}
+                                />
+                            </td>
+                            <td>
+                                <Button
+                                    variant="danger"
+                                    size="sm"
+                                    onClick={() => handleDelete(t.termek_id)}
+                                >
                                     Törlés
-                                </Button>{' '}
-                                <Button variant="warning" size="sm" onClick={() => handleEdit(t)}>
+                                </Button>{" "}
+                                <Button
+                                    variant="warning"
+                                    size="sm"
+                                    onClick={() => handleEdit(t)}
+                                >
                                     Szerkesztés
                                 </Button>
                             </td>
@@ -110,6 +172,19 @@ export default function AdminTermekLista({ user }) {
                     ))}
                 </tbody>
             </Table>
+
+            {/* infinite scroll sentinel */}
+            <div ref={observerRef} style={{ height: 1 }} />
+
+            {loading && (
+                <div className="text-center my-3">Betöltés…</div>
+            )}
+
+            {!hasMore && (
+                <div className="text-center text-muted my-3">
+                    Nincs több termék
+                </div>
+            )}
 
             {/* Szerkesztő modal */}
             <Modal show={!!editProduct} onHide={() => setEditProduct(null)}>
@@ -119,26 +194,16 @@ export default function AdminTermekLista({ user }) {
                 <Modal.Body>
                     {editProduct && (
                         <Form>
-                            <Form.Group className="mb-2">
-                                <Form.Label>Név</Form.Label>
-                                <Form.Control name="Név" value={editProduct["Név"] || ""} onChange={handleEditChange} />
-                            </Form.Group>
-                            <Form.Group className="mb-2">
-                                <Form.Label>Márka</Form.Label>
-                                <Form.Control name="Márka" value={editProduct["Márka"] || ""} onChange={handleEditChange} />
-                            </Form.Group>
-                            <Form.Group className="mb-2">
-                                <Form.Label>Ár (USD)</Form.Label>
-                                <Form.Control name="Ár(usd)" value={editProduct["Ár(usd)"] || ""} onChange={handleEditChange} />
-                            </Form.Group>
-                            <Form.Group className="mb-2">
-                                <Form.Label>Méret</Form.Label>
-                                <Form.Control name="Méret" value={editProduct["Méret"] || ""} onChange={handleEditChange} />
-                            </Form.Group>
-                            <Form.Group className="mb-2">
-                                <Form.Label>Típus</Form.Label>
-                                <Form.Control name="Típus" value={editProduct["Típus"] || ""} onChange={handleEditChange} />
-                            </Form.Group>
+                            {["Név", "Márka", "Ár(usd)", "Méret", "Típus"].map(f => (
+                                <Form.Group className="mb-2" key={f}>
+                                    <Form.Label>{f}</Form.Label>
+                                    <Form.Control
+                                        name={f}
+                                        value={editProduct[f] || ""}
+                                        onChange={handleEditChange}
+                                    />
+                                </Form.Group>
+                            ))}
                         </Form>
                     )}
                 </Modal.Body>

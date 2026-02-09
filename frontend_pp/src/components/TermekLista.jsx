@@ -50,7 +50,7 @@ export default function TermekLista({ selectedCategory, filters, searchQuery, us
         setPage(1);
         setHasMore(true);
         loadProducts(1, searchQuery);
-    }, [selectedCategory, filters?.brand, filters?.size, filters?.color, filters?.price, searchQuery]);
+    }, [selectedCategory, filters?.brand, filters?.size, filters?.color, filters?.price, searchQuery, userId]);
 
     // Infinite scroll
     useEffect(() => {

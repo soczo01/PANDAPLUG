@@ -34,7 +34,6 @@ Termek.updateById = async (id, data) => {
     );
     return rows;
 };
-
 // Termék törlése
 Termek.deleteById = async (id) => {
     const [rows] = await pool.query(

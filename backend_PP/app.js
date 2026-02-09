@@ -7,6 +7,8 @@ require('dotenv').config();
 const cors = require('cors');
 
 // ROUTER-ek
+var orderRoutes = require('./routes/orderRoutes');
+
 var termekRoutes = require('./routes/termekRoutes');
 var filterRoutes = require("./routes/filterRoutes");
 
@@ -40,6 +42,6 @@ app.use('/api/cart', cartRoutes);
 
 app.use('/api/auth', authRoutes);
 
-
+app.use('/api/orders', orderRoutes);
 
 module.exports = app;

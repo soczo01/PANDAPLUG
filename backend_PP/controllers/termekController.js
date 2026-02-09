@@ -1,5 +1,5 @@
 const Termek = require('../models/termekModel');
-
+const { mapToUpdateDto } = require('../dto/termek.dto');
 const termekController = {};
 
 termekController.getAll = async (req, res) => {
@@ -32,9 +32,23 @@ termekController.create = async (req, res) => {
 
 termekController.updateById = async (req, res) => {
     try {
-        const result = await Termek.updateById(req.params.id, req.body);
+        const data = {
+            nev: req.body.nev ?? req.body["Név"],
+            marka: req.body.marka ?? req.body["Márka"],
+            ar_usd: req.body.ar_usd ?? req.body["Ár(usd)"],
+            meret: req.body.meret ?? req.body["Méret"],
+            tipus: req.body.tipus ?? req.body["Típus"]
+        };
+
+        // minimális validáció
+        if (!data.nev || !data.marka) {
+            return res.status(400).json({ error: "Hiányzó kötelező mező" });
+        }
+
+        const result = await Termek.updateById(req.params.id, data);
         res.json({ message: 'Termék frissítve', result });
     } catch (err) {
+        console.error("UPDATE ERROR:", err);
         res.status(500).json({ error: err.message });
     }
 };

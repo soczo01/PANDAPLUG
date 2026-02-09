@@ -6,20 +6,18 @@ import Modal from 'react-bootstrap/Modal';
 import { useNavigate } from "react-router-dom";
 import { getProfile } from "../api";
 
-export default function Kosar() {
+export default function Kosar({ userId }) {
     const { cart, setCart } = useCart();
     const [show, setShow] = useState(false);
-    const [userId, setUserId] = useState(null);
     const navigate = useNavigate();
 
     useEffect(() => {
-        getProfile().then(profile => {
-            setUserId(profile.user?.id); // a backend user objektumot ad vissza, id mezővel
-            fetch(`http://localhost:8080/api/cart/${profile.user?.id}`)
+        if (userId) {
+            fetch(`http://localhost:8080/api/cart/${userId}`)
                 .then(res => res.json())
                 .then(data => setCart(data));
-        });
-    }, [setCart]);
+        }
+    }, [setCart, userId]);
 
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
