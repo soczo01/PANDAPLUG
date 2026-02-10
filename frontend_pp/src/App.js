@@ -109,7 +109,10 @@ function App() {
                                 <Route path="/" element={
                                     <>
                                         <div className="container mt-4">
-                                            <Filter onFilterChange={handleFilterChange} />
+                                            <Filter
+                                                filters={filters}
+                                                onFilterChange={handleFilterChange}
+                                            />
                                         </div>
                                         <div className="container mt-4">
                                             <SearchBar onQuery={setSearchQuery} />

@@ -10,7 +10,7 @@ export default function TermekLista({ selectedCategory, filters, searchQuery, us
     const [loadingMore, setLoadingMore] = useState(false);
     const [hasMore, setHasMore] = useState(true);
     const [selectedProduct, setSelectedProduct] = useState(null);
-    const { setCart } = useCart();
+    const { cart,setCart } = useCart();
 
     // Új: keresési módban lapozva töltsük be az eredményeket
     const loadProducts = async (nextPage = 1, query = "") => {
@@ -98,21 +98,32 @@ export default function TermekLista({ selectedCategory, filters, searchQuery, us
     // ------------ KOSÁRBA --------------
     const handleAddToCart = (termek_id) => {
 
-        fetch("http://localhost:8080/api/cart/add", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                user_id: userId,
-                termek_id,
-                mennyiseg: 1,
-            }),
-        })
-            .then(res => res.json())
-            .then(() => {
-                fetch(`http://localhost:8080/api/cart/${userId}`)
-                    .then(res => res.json())
-                    .then(cartData => setCart(cartData));
-            });
+    // ---- ELLENŐRZÉS ----
+    const alreadyInCart = cart?.some(
+        (item) => item.termek_id === termek_id
+    );
+
+    if (alreadyInCart) {
+        alert("A termék már a kosárban van!");
+        return;
+    }
+
+    // ---- HA NINCS BENNE ----
+    fetch("http://localhost:8080/api/cart/add", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            user_id: userId,
+            termek_id,
+            mennyiseg: 1,
+        }),
+    })
+        .then(res => res.json())
+        .then(() => {
+            fetch(`http://localhost:8080/api/cart/${userId}`)
+                .then(res => res.json())
+                .then(cartData => setCart(cartData));
+        });
     };
 
     if (loading) return (

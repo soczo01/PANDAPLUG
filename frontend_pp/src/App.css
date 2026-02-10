@@ -375,7 +375,8 @@ h1, h2, h3 {
   padding: 32px 32px 0 32px;
 }
 .details-close {
-  position: right;
+  
+  position: absolute;
   top: 24px;
   right: 32px;
   font-size: 2.5rem;
@@ -665,6 +666,12 @@ body, .container, .row, .col, .form-control, .card, .navbar, .modal-content, .dr
   color: #f5f5f5 !important;
 }
 
+.dropdown-item.active {
+  background: #3f6de0 !important;
+  color: #fff !important;
+  font-weight: 600;
+}
+
 /* --- AUTH (login/reg) modern stílus --- */
 .auth-container {
   background: #181a20;
@@ -754,5 +761,135 @@ body, .container, .row, .col, .form-control, .card, .navbar, .modal-content, .dr
   color: #007bff;
 }
 
+
+
+/* ============================= */
+/* 📱 TABLET */
+/* ============================= */
+@media (max-width: 1024px) {
+
+  .details-card {
+    max-width: 95%;
+    min-width: unset;
+    min-height: unset;
+  }
+
+  .details-content-row {
+    gap: 24px;
+    padding: 24px 20px 0 20px;
+  }
+
+  .details-left {
+    min-width: 260px;
+  }
+
+  .details-right {
+    min-width: unset;
+  }
+
+  .details-image {
+    width: 260px;
+    height: auto;
+  }
+}
+
+
+/* ============================= */
+/* 📱 MOBILE */
+/* ============================= */
+@media (max-width: 768px) {
+
+  .details-overlay {
+    padding: 12px;
+    align-items: flex-start;
+    overflow-y: auto;
+  }
+
+  .details-card {
+    width: 100%;
+    max-width: 100%;
+    border-radius: 18px;
+  }
+
+  .details-content-row {
+    flex-direction: column;   /* ← FŐ TÖRÉS */
+    gap: 18px;
+    padding: 20px 16px 0 16px;
+  }
+
+  .details-left {
+    min-width: unset;
+    width: 100%;
+    justify-content: center;
+  }
+
+  .details-right {
+    width: 100%;
+  }
+
+  .details-image {
+    width: 100%;
+    max-width: 320px;
+    height: auto;
+  }
+
+  .details-title {
+    font-size: 1.6rem;
+  }
+
+  .details-price {
+    font-size: 1.3rem;
+  }
+
+  .details-right p {
+    font-size: 1rem;
+  }
+
+  .details-cart-btn {
+    width: 100%;
+    padding: 14px 0;
+    font-size: 1rem;
+  }
+
+  .details-related-title {
+    margin: 24px 0 10px 0;
+    font-size: 1.1rem;
+  }
+
+  .details-related-item {
+    min-width: 80px;
+    padding: 6px;
+  }
+
+  .details-related-img {
+    width: 50px;
+    height: 70px;
+  }
+}
+
+
+@media (max-width: 480px) {
+
+  .details-title {
+    font-size: 1.3rem;
+  }
+
+  .details-price {
+    font-size: 1.1rem;
+  }
+
+  .details-image {
+    max-width: 260px;
+  }
+
+  .details-related-item {
+    min-width: 70px;
+  }
+
+  .details-related-img {
+    width: 45px;
+    height: 60px;
+  }
+}
 
 

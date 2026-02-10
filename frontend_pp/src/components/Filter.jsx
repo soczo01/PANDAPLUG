@@ -34,8 +34,36 @@ export default function Filter({ filters, onFilterChange }) {
     onFilterChange({ [key]: "ALL" });
   };
 
+  // ---- AKTÍV FILTEREK ÖSSZEGYŰJTÉSE ----
+const activeFilters = [];
+
+if (filters?.brand && filters.brand !== "ALL") {
+  activeFilters.push(filters.brand);
+}
+
+if (filters?.size && filters.size !== "ALL") {
+  activeFilters.push(filters.size);
+}
+
+if (filters?.color && filters.color !== "ALL") {
+  activeFilters.push(filters.color);
+}
+
+if (filters?.price === "ASC") {
+  activeFilters.push("Ár ↑");
+}
+
+if (filters?.price === "DESC") {
+  activeFilters.push("Ár ↓");
+}
+
+// Title string
+const dropdownTitle =
+  activeFilters.length > 0
+    ? `Filter (${activeFilters.join(", ")})`
+    : "Filter";
   return (
-    <NavDropdown title="Filter" id="filter-dropdown" className="text-white">
+    <NavDropdown title={dropdownTitle} id="filter-dropdown" className="text-white">
 
       {/* ---- MÁRKA ---- */}
       <NavDropdown.Header>Márka</NavDropdown.Header>
