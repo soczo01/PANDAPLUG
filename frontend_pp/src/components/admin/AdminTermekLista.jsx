@@ -187,35 +187,48 @@ export default function AdminTermekLista({ user }) {
             )}
 
             {/* Szerkesztő modal */}
-            <Modal show={!!editProduct} onHide={() => setEditProduct(null)}>
-                <Modal.Header closeButton>
-                    <Modal.Title>Termék szerkesztése</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                    {editProduct && (
-                        <Form>
-                            {["Név", "Márka", "Ár(usd)", "Méret", "Típus"].map(f => (
-                                <Form.Group className="mb-2" key={f}>
-                                    <Form.Label>{f}</Form.Label>
-                                    <Form.Control
-                                        name={f}
-                                        value={editProduct[f] || ""}
-                                        onChange={handleEditChange}
-                                    />
-                                </Form.Group>
-                            ))}
-                        </Form>
-                    )}
-                </Modal.Body>
-                <Modal.Footer>
-                    <Button variant="secondary" onClick={() => setEditProduct(null)}>
-                        Mégse
-                    </Button>
-                    <Button variant="primary" onClick={handleEditSave} disabled={saving}>
-                        Mentés
-                    </Button>
-                </Modal.Footer>
-            </Modal>
+<Modal show={!!editProduct} onHide={() => setEditProduct(null)}>
+    <Modal.Header closeButton>
+        <Modal.Title>Termék szerkesztése</Modal.Title>
+    </Modal.Header>
+    <Modal.Body>
+        {editProduct && (
+            <Form>
+                {["Név", "Márka", "Ár(usd)", "Méret", "Típus"].map(f => {
+                    const fieldMap = {
+                        "Név": "nev",
+                        "Márka": "markanev",   // <-- a DB oszlop pontos neve
+                        "Ár(usd)": "ar_usd",
+                        "Méret": "meret",
+                        "Típus": "tipus"
+                    };
+                    const fieldName = fieldMap[f];
+
+                    return (
+                        <Form.Group className="mb-2" key={f}>
+                            <Form.Label>{f}</Form.Label>
+                            <Form.Control
+                                name={fieldName}
+                                value={editProduct[fieldName] || ""}
+                                onChange={handleEditChange}
+                            />
+                        </Form.Group>
+                    );
+                })}
+            </Form>
+        )}
+    </Modal.Body>
+    <Modal.Footer>
+        <Button variant="secondary" onClick={() => setEditProduct(null)}>
+            Mégse
+        </Button>
+        <Button variant="primary" onClick={handleEditSave} disabled={saving}>
+            {saving ? "Mentés..." : "Mentés"}
+        </Button>
+    </Modal.Footer>
+</Modal>
+
+
         </div>
     );
 }

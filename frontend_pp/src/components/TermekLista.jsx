@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useCart } from "../context/CartContext";
 import Details from "./Details";
 import Spinner from 'react-bootstrap/Spinner';
+import Toast from 'react-bootstrap/Toast';
 
 export default function TermekLista({ selectedCategory, filters, searchQuery, userId }) {
     const [termekek, setTermekek] = useState([]);
@@ -10,6 +11,7 @@ export default function TermekLista({ selectedCategory, filters, searchQuery, us
     const [loadingMore, setLoadingMore] = useState(false);
     const [hasMore, setHasMore] = useState(true);
     const [selectedProduct, setSelectedProduct] = useState(null);
+    const [showToast, setShowToast] = useState(false);
     const { cart,setCart } = useCart();
 
     // Új: keresési módban lapozva töltsük be az eredményeket
@@ -123,6 +125,8 @@ export default function TermekLista({ selectedCategory, filters, searchQuery, us
             fetch(`http://localhost:8080/api/cart/${userId}`)
                 .then(res => res.json())
                 .then(cartData => setCart(cartData));
+            setShowToast(true); // Visszajelzés!
+            setTimeout(() => setShowToast(false), 2000);
         });
     };
 
@@ -136,6 +140,19 @@ export default function TermekLista({ selectedCategory, filters, searchQuery, us
 
     return (
         <div className="container mt-4">
+
+            {/* Toast visszajelzés */}
+            <Toast
+                show={showToast}
+                onClose={() => setShowToast(false)}
+                delay={2000}
+                autohide
+                style={{ position: 'fixed', top: 80, right: 20, zIndex: 9999 }}
+            >
+                <Toast.Body style={{ background: '#222', color: '#fff', fontWeight: 'bold' }}>
+                    Termék a kosárba került!
+                </Toast.Body>
+            </Toast>
 
             {/* Részletes nézet */}
             <Details

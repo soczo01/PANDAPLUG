@@ -34,14 +34,14 @@ termekController.updateById = async (req, res) => {
     try {
         const data = {
             nev: req.body.nev ?? req.body["Név"],
-            marka: req.body.marka ?? req.body["Márka"],
-            ar_usd: req.body.ar_usd ?? req.body["Ár(usd)"],
+            markanev: req.body.marka ?? req.body["Márka"],
+            ar_usd: req.body.ar_usd ?? req.body["Ár (usd)"],
             meret: req.body.meret ?? req.body["Méret"],
             tipus: req.body.tipus ?? req.body["Típus"]
         };
 
         // minimális validáció
-        if (!data.nev || !data.marka) {
+        if (!data.nev || !data.markanev) {
             return res.status(400).json({ error: "Hiányzó kötelező mező" });
         }
 

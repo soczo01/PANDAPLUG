@@ -10,7 +10,7 @@ import React, { useEffect, useState, useRef } from "react";
 import LoginForm from "./components/LoginForm";
 import RegForm from "./components/RegForm";
 import { jwtDecode } from "jwt-decode";
-import { getToken, logout } from "./api";
+import { getToken, logout, getCart } from "./api";
 // 🔥 Router importok
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import SearchBar from "./components/SearchBar"; // SearchBar import
@@ -33,6 +33,8 @@ function App() {
         price: "ALL",
     });
 
+    const [cart, setCart] = useState([]);
+
     const handleFilterChange = (newFilter) => {
         setFilters((prev) => ({
             ...prev,
@@ -49,11 +51,28 @@ function App() {
                 // Bármilyen user id mező (user_id, sub, id) támogatása
                 const userId = decoded.user_id || decoded.sub || decoded.id;
                 setUserId(userId);
+                // Kosár frissítése userId alapján
+                if (userId) {
+                    fetch(`http://localhost:8080/api/cart/${userId}`)
+                        .then(res => res.json())
+                        .then(data => setCart(data || []));
+                }
             } catch (e) {
                 console.error("Hibás token");
             }
         }
     }, []);
+
+    // Login/Regisztráció után kosár frissítés
+    const handleLogin = (userObj, userId) => {
+        setUser(userObj);
+        setUserId(userId);
+        if (userId) {
+            fetch(`http://localhost:8080/api/cart/${userId}`)
+                .then(res => res.json())
+                .then(data => setCart(data || []));
+        }
+    };
 
     const kosarRef = useRef();
 
@@ -69,10 +88,7 @@ function App() {
                                 <RegForm onSwitchToLogin={() => setShowRegister(false)} />
                             ) : (
                                 <LoginForm
-                                    onLogin={(userObj, userId) => {
-                                        setUser(userObj);
-                                        setUserId(userId);
-                                    }}
+                                    onLogin={handleLogin}
                                     onSwitchToRegister={() => setShowRegister(true)}
                                 />
                             )}
@@ -97,7 +113,7 @@ function App() {
                                 >
                                     Kijelentkezés
                                 </button>
-                                <Kosar userId={userId} />
+                                <Kosar userId={userId} cart={cart} setCart={setCart} />
                             </div>
 
                             <Routes>

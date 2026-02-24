@@ -1,12 +1,15 @@
-import React from "react";
+import React, { useState } from "react";
 import Container from "react-bootstrap/Container";
 import Nav from "react-bootstrap/Nav";
 import Navbar from "react-bootstrap/Navbar";
 import NavDropdown from "react-bootstrap/NavDropdown";
 import SearchBar from "./SearchBar";
 import { Link } from "react-router-dom";
+import { FaUser } from "react-icons/fa";
+import UserProfileModal from "./UserProfileModal";
 
 function Menu({ onCategoryChange, onFilterChange, onSearch, user }) {
+  const [showProfile, setShowProfile] = useState(false);
   return (
     <Navbar bg="dark" data-bs-theme="dark" expand="lg">
       <Container>
@@ -23,7 +26,7 @@ function Menu({ onCategoryChange, onFilterChange, onSearch, user }) {
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
           {/* KATEGÓRIÁK */}
-          <Nav className="ms-auto">
+          <Nav className="ms-auto" style={{ alignItems: "center" }}>
             <Nav.Link onClick={() => onCategoryChange("shirts")}>Shirts</Nav.Link>
             <Nav.Link onClick={() => onCategoryChange("hoodies")}>Hoodies</Nav.Link>
             <Nav.Link onClick={() => onCategoryChange("pants")}>Pants</Nav.Link>
@@ -34,10 +37,18 @@ function Menu({ onCategoryChange, onFilterChange, onSearch, user }) {
                 Admin terméklista
               </Nav.Link>
             )}
+            {/* Profil ikon minden bejelentkezett usernek */}
+            {user && (
+              <Nav.Link style={{ padding: "0 10px" }} onClick={() => setShowProfile(true)}>
+                <FaUser size={22} />
+              </Nav.Link>
+            )}
           </Nav>
           {/* Kereső a navbar jobb oldalán */}
         </Navbar.Collapse>
       </Container>
+      {/* Profil modal */}
+      <UserProfileModal show={showProfile} onClose={() => setShowProfile(false)} />
     </Navbar>
   );
 }
