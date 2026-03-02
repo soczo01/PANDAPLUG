@@ -122,15 +122,19 @@ router.post('/logout', (req, res) => {
     });
     res.sendStatus(204);
 });
-
+ 
 // 🟩 VÉDETT ÚTVONAL PÉLDA
-router.get('/profile', authenticateToken, (req, res) => {
+router.get('/profile', authenticateToken, async (req, res) => {
     const iat = new Date(req.user.iat * 1000).toLocaleString();
     const exp = new Date(req.user.exp * 1000).toLocaleString();
-    
+    // Csak a felhasználónév, id, role, token info
     res.json({
         message: "Sikeres hozzáférés a védett erőforráshoz",
-        user: req.user,
+        user: {
+            id: req.user.id,
+            username: req.user.username,
+            role: req.user.role
+        },
         token_info: { iat, exp }
     });
 });

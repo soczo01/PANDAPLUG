@@ -17,7 +17,9 @@ router.delete('/admin/:id', authenticateToken, isAdmin, (req, res) => {
 });
 
 // ADMIN ONLY: Termék szerkesztése
-router.put('/admin/:id', authenticateToken, isAdmin, (req, res) => {
+// IDEIGLENES, csak tesztre!
+router.put('/admin/:id', (req, res) => {
+    console.log('PUT /api/termekek/admin/:id elerte a route-ot, params:', req.params);
     termekController.updateById(req, res);
 });
 
@@ -42,8 +44,71 @@ router.get("/paged", async (req, res) => {
     }
 });
 
+// Márkák listája (id + név) – legördülőhöz
+router.get('/markak', async (req, res) => {
+    try {
+        const [rows] = await pool.query(
+            'SELECT id, markanev FROM marka ORDER BY markanev'
+        );
+        res.json(rows);
+    } catch (err) {
+        console.error("Márkák lekérdezés hiba:", err);
+        res.status(500).json({ error: "Hiba a márkák lekérdezése során" });
+    }
+});
+
+// Méretek listája – legördülőhöz
+router.get('/meretek', async (req, res) => {
+    try {
+        const [rows] = await pool.query(
+            'SELECT id, meret FROM meret ORDER BY id'
+        );
+        res.json(rows);
+    } catch (err) {
+        console.error("Méretek lekérdezés hiba:", err);
+        res.status(500).json({ error: "Hiba a méretek lekérdezése során" });
+    }
+});
+
+// Színek listája – legördülőhöz
+router.get('/szinek', async (req, res) => {
+    try {
+        const [rows] = await pool.query(
+            'SELECT id, szin FROM szin ORDER BY szin'
+        );
+        res.json(rows);
+    } catch (err) {
+        console.error("Színek lekérdezés hiba:", err);
+        res.status(500).json({ error: "Hiba a színek lekérdezése során" });
+    }
+});
+
+// Típusok listája – legördülőhöz
+router.get('/tipusok', async (req, res) => {
+    try {
+        const [rows] = await pool.query(
+            'SELECT id, tipus FROM tipus ORDER BY tipus'
+        );
+        res.json(rows);
+    } catch (err) {
+        console.error("Típusok lekérdezés hiba:", err);
+        res.status(500).json({ error: "Hiba a típusok lekérdezése során" });
+    }
+});
 
 
+// Elérhetőségi státuszok listája – legördülőhöz
+router.get('/elerhetosegek', async (req, res) => {
+    try {
+        const [rows] = await pool.query(
+            'SELECT id, statusz FROM elerhetoseg ORDER BY id'
+        );
+        res.json(rows);
+    } catch (err) {
+        console.error("Elérhetőségek lekérdezés hiba:", err);
+        res.status(500).json({ error: "Hiba az elérhetőségek lekérdezése során" });
+    }
+});
 
 // Összes termék
 router.get('/', function(req, res, next) {

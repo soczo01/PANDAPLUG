@@ -32,21 +32,42 @@ termekController.create = async (req, res) => {
 
 termekController.updateById = async (req, res) => {
     try {
-        const data = {
-            nev: req.body.nev ?? req.body["Név"],
-            markanev: req.body.marka ?? req.body["Márka"],
-            ar_usd: req.body.ar_usd ?? req.body["Ár (usd)"],
-            meret: req.body.meret ?? req.body["Méret"],
-            tipus: req.body.tipus ?? req.body["Típus"]
-        };
+        const id = req.params.id;
 
-        // minimális validáció
-        if (!data.nev || !data.markanev) {
-            return res.status(400).json({ error: "Hiányzó kötelező mező" });
+        const {
+            nev,
+            ar_usd,
+            szin_id,
+            meret_id,
+            elerhetoseg_id,
+            tipus_id,
+            marka_id,
+            kep_id
+        } = req.body;
+
+        const data = {};
+
+        if (nev !== undefined) data.nev = nev;
+        if (ar_usd !== undefined) data.ar_usd = ar_usd;
+        if (szin_id !== undefined) data.szin_id = szin_id;
+        if (meret_id !== undefined) data.meret_id = meret_id;
+        if (elerhetoseg_id !== undefined) data.elerhetoseg_id = elerhetoseg_id;
+        if (tipus_id !== undefined) data.tipus_id = tipus_id;
+        if (marka_id !== undefined) data.marka_id = marka_id;
+        if (kep_id !== undefined) data.kep_id = kep_id;
+
+        if (Object.keys(data).length === 0) {
+            return res.status(400).json({ error: "Nincs frissíthető mező" });
         }
 
-        const result = await Termek.updateById(req.params.id, data);
+        const result = await Termek.updateById(id, data);
+
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ error: "Nincs ilyen termék" });
+        }
+
         res.json({ message: 'Termék frissítve', result });
+
     } catch (err) {
         console.error("UPDATE ERROR:", err);
         res.status(500).json({ error: err.message });

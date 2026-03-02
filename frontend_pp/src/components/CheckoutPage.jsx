@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useCart } from "../context/CartContext";
 import { useNavigate } from "react-router-dom";
 import { Container, Row, Col, Form, Button, Card } from "react-bootstrap";
@@ -18,22 +18,33 @@ export default function CheckoutPage() {
 
     const total = cart.reduce((sum, item) => sum + Number(item["Ár(usd)"] || 0), 0);
 
+    useEffect(() => {
+        // userId-t mindig a users tábla id mezőjéből vegyük
+        const token = window.localStorage.getItem("token");
+        if (token) {
+            try {
+                const decoded = JSON.parse(atob(token.split('.')[1]));
+                window.localStorage.setItem("userId", decoded.id);
+            } catch (e) {}
+        }
+    }, []);
+
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-
+        // userId-t a users tábla id mezőjéből vegyük
+        const userId = window.localStorage.getItem("userId");
         const rendelesAdatok = {
             felhasznalo: formData,
             termekek: cart,
             osszeg: total,
-            datum: new Date().toISOString()
+            datum: new Date().toISOString(),
+            userId: userId // helyes id
         };
-
         try {
-            // Itt küldjük a backendnek (ezt az útvonalat majd meg kell írnod a szerveren)
             const response = await fetch("http://localhost:8080/api/orders", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },

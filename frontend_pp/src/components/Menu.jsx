@@ -48,7 +48,7 @@ function Menu({ onCategoryChange, onFilterChange, onSearch, user }) {
         </Navbar.Collapse>
       </Container>
       {/* Profil modal */}
-      <UserProfileModal show={showProfile} onClose={() => setShowProfile(false)} />
+      <UserProfileModal show={showProfile} onClose={() => setShowProfile(false)} userId={user?.id} />
     </Navbar>
   );
 }
