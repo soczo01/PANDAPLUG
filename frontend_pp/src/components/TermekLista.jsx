@@ -14,7 +14,7 @@ export default function TermekLista({ selectedCategory, filters, searchQuery, us
     const [showToast, setShowToast] = useState(false);
     const { cart,setCart } = useCart();
 
-    // Új: keresési módban lapozva töltsük be az eredményeket
+    //keresési módban lapozva töltsük be az eredményeket
     const loadProducts = async (nextPage = 1, query = "") => {
         try {
             let url;
@@ -71,7 +71,7 @@ export default function TermekLista({ selectedCategory, filters, searchQuery, us
         if (page > 1) loadProducts(page, searchQuery);
     }, [page, searchQuery]);
 
-    // ---------------- SZŰRÉS (mint eddig) ------------------
+    // ---------------- SZŰRÉS------------------
     const filteredProducts = termekek
         .filter((t) => {
             // KATEGÓRIA

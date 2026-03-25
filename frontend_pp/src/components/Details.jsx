@@ -29,13 +29,13 @@ export default function Details({ product, onClose, onAddToCart, onSelectProduct
         const slider = sliderRef.current;
 
         let scrollSpeed = 1; // px
-        let maxScroll = slider.scrollWidth / 2; // fél pont → itt kell visszaugrani
+        let maxScroll = slider.scrollWidth / 2;
 
         const interval = setInterval(() => {
             slider.scrollLeft += scrollSpeed;
 
             if (slider.scrollLeft >= maxScroll) {
-                slider.scrollLeft = 0; // folytatólagos, nem ugrik láthatót
+                slider.scrollLeft = 0; 
             }
         }, 20);
 

@@ -60,8 +60,8 @@ if (filters?.price === "DESC") {
 // Title string
 const dropdownTitle =
   activeFilters.length > 0
-    ? `Filter (${activeFilters.join(", ")})`
-    : "Filter";
+    ? `Szűrés (${activeFilters.join(", ")})`
+    : "Szűrés";
   return (
     <NavDropdown title={dropdownTitle} id="filter-dropdown" className="text-white">
 

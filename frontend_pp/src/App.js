@@ -11,7 +11,7 @@ import LoginForm from "./components/LoginForm";
 import RegForm from "./components/RegForm";
 import { jwtDecode } from "jwt-decode";
 import { getToken, logout, getCart } from "./api";
-// 🔥 Router importok
+//  Router importok
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import SearchBar from "./components/SearchBar"; // SearchBar import
 import AdminTermekLista from "./components/admin/AdminTermekLista";
@@ -22,10 +22,10 @@ function App() {
     const [showRegister, setShowRegister] = useState(false);
     const [searchQuery, setSearchQuery] = useState(""); // keresési szöveg
 
-    // 🔥 KATEGÓRIA
+    //  KATEGÓRIA
     const [selectedCategory, setSelectedCategory] = useState("ALL");
 
-    // 🔥 FILTEREK
+    //  FILTEREK
     const [filters, setFilters] = useState({
         size: "ALL",
         color: "ALL",

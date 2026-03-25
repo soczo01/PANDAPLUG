@@ -27,10 +27,10 @@ function Menu({ onCategoryChange, onFilterChange, onSearch, user }) {
         <Navbar.Collapse id="basic-navbar-nav">
           {/* KATEGÓRIÁK */}
           <Nav className="ms-auto" style={{ alignItems: "center" }}>
-            <Nav.Link onClick={() => onCategoryChange("shirts")}>Shirts</Nav.Link>
-            <Nav.Link onClick={() => onCategoryChange("hoodies")}>Hoodies</Nav.Link>
-            <Nav.Link onClick={() => onCategoryChange("pants")}>Pants</Nav.Link>
-            <Nav.Link onClick={() => onCategoryChange("shorts")}>Shorts</Nav.Link>
+            <Nav.Link onClick={() => onCategoryChange("shirts")}>PÓLÓK</Nav.Link>
+            <Nav.Link onClick={() => onCategoryChange("hoodies")}>PULÓVEREK</Nav.Link>
+            <Nav.Link onClick={() => onCategoryChange("pants")}>NADRÁGOK</Nav.Link>
+            <Nav.Link onClick={() => onCategoryChange("shorts")}>RÖVIDNADRÁGOK</Nav.Link>
             {/* Admin link csak adminnak */}
             {user?.role === "admin" && (
               <Nav.Link as={Link} to="/admin/termekek">

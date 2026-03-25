@@ -34,34 +34,49 @@ export default function CheckoutPage() {
     };
 
     const handleSubmit = async (e) => {
-        e.preventDefault();
-        // userId-t a users tábla id mezőjéből vegyük
-        const userId = window.localStorage.getItem("userId");
-        const rendelesAdatok = {
-            felhasznalo: formData,
-            termekek: cart,
-            osszeg: total,
-            datum: new Date().toISOString(),
-            userId: userId // helyes id
-        };
-        try {
-            const response = await fetch("http://localhost:8080/api/orders", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(rendelesAdatok)
-            });
+    e.preventDefault();
 
-            if (response.ok) {
-                alert("Sikeres rendelés!");
-                setCart([]); // Kosár ürítése
-                navigate("/"); // Vissza a főoldalra
-            } else {
-                alert("Hiba történt a rendelés során.");
-            }
-        } catch (error) {
-            console.error("Hiba:", error);
-        }
+    const userId = window.localStorage.getItem("userId");
+
+    const rendelesAdatok = {
+        felhasznalo: formData,
+        termekek: cart,
+        osszeg: total,
+        datum: new Date().toISOString(),
+        userId: userId
     };
+
+    try {
+        const response = await fetch("http://localhost:8080/api/orders", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(rendelesAdatok)
+        });
+
+        if (response.ok) {
+            // 1) DB-beli kosár ürítése
+            try {
+                await fetch(`http://localhost:8080/api/cart/clear/${userId}`, {
+                    method: "DELETE"
+         
+                });
+            } catch (err) {
+                console.error("Kosár ürítése (DB) közben hiba:", err);
+            }
+
+            // 2) frontend kosár ürítése
+            setCart([]);
+
+            // 3) vissza főoldalra
+            alert("Sikeres rendelés!");
+            navigate("/");
+        } else {
+            alert("Hiba történt a rendelés során.");
+        }
+    } catch (error) {
+        console.error("Hiba:", error);
+    }
+};
 
     if (cart.length === 0) {
         return (

@@ -87,7 +87,7 @@ export default function AdminTermekLista({ user }) {
         };
 
         loadOptions();
-        // eslint-disable-next-line
+
     }, []);
 
     // infinite scroll observer
@@ -103,7 +103,7 @@ export default function AdminTermekLista({ user }) {
         observer.observe(observerRef.current);
 
         return () => observer.disconnect();
-        // eslint-disable-next-line
+
     }, [observerRef.current, hasMore, loading]);
 
     // törlés
